@@ -1,0 +1,87 @@
+name: Build Koe
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            args: ""
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+            args: "--target x86_64-apple-darwin"
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+            args: "--target aarch64-apple-darwin"
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust (stable)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Cache Rust build
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "src-tauri -> target"
+
+      # whisper-rs は CMake でビルドされる
+      - name: Install CMake (Windows)
+        if: matrix.platform == 'windows-latest'
+        uses: lukka/get-cmake@latest
+
+      - name: Install CMake (macOS)
+        if: matrix.platform == 'macos-latest'
+        run: brew install cmake
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # 未署名ビルド（macOS: Gatekeeper 警告が出る）
+          # 署名する場合は下記シークレットを設定:
+          # APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD,
+          # APPLE_SIGNING_IDENTITY, APPLE_ID, APPLE_PASSWORD, APPLE_TEAM_ID
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "Koe ${{ github.ref_name }}"
+          releaseBody: |
+            ## Koe ${{ github.ref_name }}
+
+            Windows/macOS 向け未署名ビルドです。
+
+            ### macOS ユーザーへ
+            未署名のため Gatekeeper 警告が出ます。初回起動前にターミナルで実行:
+            ```
+            xattr -dr com.apple.quarantine /Applications/Koe.app
+            ```
+
+            ### 初回セットアップ
+            1. アプリを起動し設定画面を開く
+            2. Whisper モデルをダウンロード（small: 466MB / medium: 1.5GB）
+            3. 任意で Gemini API キーを設定（未設定時は生テキストをペースト）
+            4. **右Alt** キーで録音開始/停止（設定から変更可）
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
