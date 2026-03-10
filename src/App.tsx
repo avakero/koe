@@ -3,6 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { invoke } from "@tauri-apps/api/core";
 import { formatWithGemini, getApiKey } from "./lib/gemini";
 import Settings from "./components/Settings";
+import UpdateChecker from "./components/UpdateChecker";
 
 type AppStatus =
   | "idle"
@@ -163,6 +164,8 @@ export default function App() {
       >
         ⚙️ 設定
       </button>
+
+      <UpdateChecker />
     </div>
   );
 }

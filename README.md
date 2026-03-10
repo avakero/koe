@@ -2,6 +2,42 @@
 
 Whisper.cpp (ローカル推論) + Gemini BYOK で動く、開発者コスト $0 の日本語音声入力ツール。
 
+## インストール
+
+### ダウンロード
+
+[GitHub Releases](https://github.com/avakero/koe/releases/latest) から最新版をダウンロード:
+
+| OS | ファイル | 備考 |
+|------|----------|------|
+| **Windows** | `Koe_x.x.x_x64-setup.exe` | NSIS インストーラー |
+| **macOS (Intel)** | `Koe_x.x.x_x64.dmg` | x86_64 |
+| **macOS (Apple Silicon)** | `Koe_x.x.x_aarch64.dmg` | M1/M2/M3 |
+
+### Windows
+
+1. `Koe_x.x.x_x64-setup.exe` をダウンロードして実行
+2. SmartScreen 警告が表示される場合: **「詳細情報」→「実行」** をクリック
+3. インストーラーの指示に従ってインストール
+
+### macOS
+
+1. `.dmg` ファイルを開き、`Koe.app` を `Applications` にドラッグ
+2. 初回起動時に Gatekeeper 警告が出る場合、ターミナルで以下を実行:
+   ```bash
+   xattr -dr com.apple.quarantine /Applications/Koe.app
+   ```
+
+## 初回セットアップ
+
+1. アプリを起動
+2. **設定画面** → Whisper モデルをダウンロード
+   - `small` (466 MB): 日本語で十分な精度
+   - `medium` (1.5 GB): より高精度
+   - `large` (3.1 GB): 最高精度（GPU推奨）
+3. (任意) [Google AI Studio](https://aistudio.google.com/app/apikey) で Gemini API キーを取得し設定
+4. **Ctrl+Shift+K** で録音開始 → もう一度押して停止 → 自動ペースト
+
 ## 機能
 
 - **グローバルショートカット** (デフォルト: Ctrl+Shift+K) で録音開始/停止
@@ -9,10 +45,13 @@ Whisper.cpp (ローカル推論) + Gemini BYOK で動く、開発者コスト $0
 - **Gemini API** (任意) でフィラーワード除去・句読点整形
 - 整形後テキストを **アクティブウィンドウに自動ペースト**
 - システムトレイ常駐
+- **自動更新** — 新バージョンの通知・インストールを自動で行います
 
-## 必要なもの
+## 開発者向け
 
-### ビルド時
+### 必要なもの
+
+#### ビルド時
 - [Node.js](https://nodejs.org/) 20+
 - [Rust](https://rustup.rs/) (stable)
 - **CMake 3.14+** (whisper-rs のビルドに必要)
@@ -21,12 +60,10 @@ Whisper.cpp (ローカル推論) + Gemini BYOK で動く、開発者コスト $0
 - Windows: Visual Studio Build Tools (MSVC)
 - macOS: Xcode Command Line Tools (`xcode-select --install`)
 
-### 実行時
+#### 実行時
 - Whisper モデル (設定画面からダウンロード)
-  - `small`: 466 MB — 日本語で十分な精度
-  - `medium`: 1.5 GB — より高精度
 
-## セットアップ
+### セットアップ
 
 ```bash
 # 依存関係インストール
@@ -36,24 +73,35 @@ npm install
 npm run tauri dev
 ```
 
-## ビルド
+### ビルド
 
 ```bash
 npm run tauri build
 ```
 
-## macOS 未署名バイナリの実行
+### リリース手順
+
+1. `tauri.conf.json` と `package.json` のバージョンを更新
+2. タグを付けてプッシュ:
+   ```bash
+   git tag v0.2.0
+   git push origin v0.2.0
+   ```
+3. GitHub Actions が自動でビルド → GitHub Releases にドラフトが作成されます
+4. ドラフトの内容を確認して公開
+
+### 自動更新の署名キー設定
+
+初回のみ、署名キーペアの生成と設定が必要です:
 
 ```bash
-xattr -dr com.apple.quarantine /Applications/Koe.app
+npx @tauri-apps/cli signer generate -w ~/.tauri/koe.key
 ```
 
-## 初回セットアップ手順
+生成された **公開鍵** を `src-tauri/tauri.conf.json` の `plugins.updater.pubkey` に設定し、**秘密鍵** を GitHub Secrets に登録:
 
-1. アプリを起動
-2. 設定画面 → Whisper モデルをダウンロード
-3. (任意) [Google AI Studio](https://aistudio.google.com/app/apikey) で Gemini API キーを取得し設定
-4. Ctrl+Shift+K で録音開始 → もう一度押して停止 → 自動ペースト
+- `TAURI_SIGNING_PRIVATE_KEY`: 秘密鍵の内容
+- `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`: 秘密鍵のパスワード
 
 ## コスト
 

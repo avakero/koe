@@ -47,5 +47,13 @@
       "icons/icon.ico"
     ],
     "licenseFile": "../LICENSE"
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/avakero/koe/releases/latest/download/latest.json"
+      ],
+      "pubkey": ""
+    }
   }
 }

@@ -7,24 +7,26 @@
 - macOS: Apple Developer Program ($99/年) で Gatekeeper 対応
 - 署名なしの場合、ユーザーに手動許可手順の案内が必要
 
-### 2. GitHub Actions CI/CD
-- `tauri-action` で Windows/macOS バイナリを自動ビルド
-- タグプッシュ時に GitHub Releases へ自動アップロード
-- ワークフローファイル: `.github/workflows/release.yml`
+### ~~2. GitHub Actions CI/CD~~ ✅
+- [x] `tauri-action` で Windows/macOS バイナリを自動ビルド
+- [x] タグプッシュ時に GitHub Releases へ自動アップロード
+- [x] ワークフローファイル: `.github/workflows/release.yml`
 
-### 3. 自動更新機能
-- `tauri-plugin-updater` を導入
-- GitHub Releases を更新サーバーとして利用
-- `tauri.conf.json` に updater 設定を追加
+### ~~3. 自動更新機能~~ ✅
+- [x] `tauri-plugin-updater` を導入
+- [x] GitHub Releases を更新サーバーとして利用
+- [x] `tauri.conf.json` に updater 設定を追加
+- [x] 更新チェック UI (UpdateChecker コンポーネント) を追加
 
-### 4. README にインストール手順追加
-- エンドユーザー向けのダウンロード・インストール手順
-- 初回セットアップ（whisper-cli DL → モデル DL → 録音テスト）
+### ~~4. README にインストール手順追加~~ ✅
+- [x] エンドユーザー向けのダウンロード・インストール手順
+- [x] 初回セットアップ（whisper-cli DL → モデル DL → 録音テスト）
+- [x] 開発者向けリリース手順・署名キー設定手順
 
-### 5. GitHub リポジトリ作成・初回プッシュ
-- リポジトリ作成
-- `.gitignore` 確認（node_modules, target, dist 等）
-- 初回コミット・プッシュ
+### ~~5. GitHub リポジトリ作成・初回プッシュ~~ ✅
+- [x] リポジトリ作成 (https://github.com/avakero/koe)
+- [x] `.gitignore` 作成（node_modules, target, dist 等）
+- [x] 初回コミット・プッシュ
 
 ## 完了済み
 
