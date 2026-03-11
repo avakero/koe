@@ -24,6 +24,7 @@ export default function Settings({ onBack }: Props) {
   const [binProgress, setBinProgress] = useState<number | null>(null);
   const [saveMsg, setSaveMsg] = useState("");
   const [isMsgError, setIsMsgError] = useState(false);
+  const [capturing, setCapturing] = useState(false);
 
   useEffect(() => {
     getApiKey().then((k) => { if (k) setApiKey(k); });
@@ -40,6 +41,45 @@ export default function Settings({ onBack }: Props) {
     });
     return () => { ul1.then((fn) => fn()); ul2.then((fn) => fn()); };
   }, []);
+
+  // キーキャプチャ: keydown イベントを Tauri 形式のショートカット文字列に変換
+  const handleKeyCapture = (e: React.KeyboardEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // 修飾キーだけが押された場合は無視（通常キーと組み合わせを待つ）
+    if (["Control", "Shift", "Alt", "Meta"].includes(e.key)) return;
+
+    const parts: string[] = [];
+    if (e.ctrlKey || e.metaKey) parts.push("Ctrl");
+    if (e.shiftKey) parts.push("Shift");
+    if (e.altKey) parts.push("Alt");
+
+    // キー名を Tauri 形式に変換
+    const keyMap: Record<string, string> = {
+      " ": "Space",
+      "ArrowUp": "Up", "ArrowDown": "Down",
+      "ArrowLeft": "Left", "ArrowRight": "Right",
+      "Escape": "Escape", "Enter": "Enter",
+      "Backspace": "Backspace", "Delete": "Delete",
+      "Tab": "Tab",
+    };
+
+    let keyName = keyMap[e.key] || e.key;
+    // 英字は大文字に統一
+    if (keyName.length === 1 && /[a-zA-Z]/.test(keyName)) {
+      keyName = keyName.toUpperCase();
+    }
+    // F1-F24 はそのまま
+    if (/^F\d{1,2}$/.test(keyName)) {
+      // OK
+    }
+
+    parts.push(keyName);
+    const newShortcut = parts.join("+");
+    setShortcut(newShortcut);
+    setCapturing(false);
+  };
 
   const handleShortcutSave = async () => {
     try {
@@ -135,16 +175,32 @@ export default function Settings({ onBack }: Props) {
       <div style={sectionStyle}>
         <span style={labelStyle}>グローバルショートカット</span>
         <p style={{ fontSize: 12, color: "#718096", marginBottom: 10 }}>
-          録音開始/停止のショートカットキー。
-          例: <code>Ctrl+Shift+K</code>, <code>Ctrl+Shift+Space</code>, <code>F8</code>
+          録音開始/停止のショートカットキー。下のボタンを押してからキーを入力してください。
         </p>
-        <div style={{ display: "flex", gap: 8 }}>
-          <input
-            value={shortcut}
-            onChange={(e) => setShortcut(e.target.value)}
-            placeholder="Ctrl+Shift+K"
-            style={{ flex: 1 }}
-          />
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <div
+            tabIndex={0}
+            onKeyDown={capturing ? handleKeyCapture : undefined}
+            onBlur={() => setCapturing(false)}
+            onClick={() => setCapturing(true)}
+            style={{
+              flex: 1,
+              padding: "8px 12px",
+              borderRadius: 6,
+              border: capturing ? "2px solid #4299e1" : "1px solid #e2e8f0",
+              background: capturing ? "#ebf8ff" : "#f7fafc",
+              fontSize: 14,
+              fontWeight: 600,
+              textAlign: "center",
+              cursor: "pointer",
+              outline: "none",
+              color: capturing ? "#2b6cb0" : "#2d3748",
+              transition: "all 0.2s",
+              userSelect: "none",
+            }}
+          >
+            {capturing ? "🎹 キーを押してください..." : shortcut}
+          </div>
           <button onClick={handleShortcutSave}>更新</button>
         </div>
       </div>
