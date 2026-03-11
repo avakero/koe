@@ -4,6 +4,8 @@ import { invoke } from "@tauri-apps/api/core";
 import { formatWithGemini, getApiKey } from "./lib/gemini";
 import Settings from "./components/Settings";
 import UpdateChecker from "./components/UpdateChecker";
+import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 type AppStatus =
   | "idle"
@@ -163,6 +165,34 @@ export default function App() {
         style={{ marginTop: 12, fontSize: 13, color: "#666" }}
       >
         ⚙️ 設定
+      </button>
+
+      <button
+        onClick={async () => {
+          try {
+            const floating = await WebviewWindow.getByLabel("floating");
+            if (floating) {
+              await floating.show();
+              await floating.setFocus();
+            }
+            await getCurrentWindow().hide();
+          } catch (e) {
+            console.error("フローティングモード切替失敗:", e);
+          }
+        }}
+        style={{
+          marginTop: 8,
+          fontSize: 13,
+          color: "#fff",
+          background: "linear-gradient(135deg, #0ea5e9, #6366f1)",
+          border: "none",
+          borderRadius: 8,
+          padding: "8px 18px",
+          fontWeight: 600,
+          cursor: "pointer",
+        }}
+      >
+        🎙️ フローティングモード
       </button>
 
       <UpdateChecker />

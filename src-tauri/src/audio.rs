@@ -99,9 +99,11 @@ fn build_stream_f32(
         move |data: &[f32], _| {
             let mono = to_mono_f32(data, channels as usize);
             let resampled = resample(&mono, input_rate, target_rate);
+            let rms = compute_rms(&mono);
             let mut s = state.lock().unwrap();
             if s.recording {
                 s.audio_samples.extend_from_slice(&resampled);
+                s.audio_level = rms;
             }
         },
         |err| eprintln!("[audio] f32 ストリームエラー: {err}"),
@@ -123,9 +125,11 @@ fn build_stream_i16(
             let floats: Vec<f32> = data.iter().map(|&s| s as f32 / i16::MAX as f32).collect();
             let mono = to_mono_f32(&floats, channels as usize);
             let resampled = resample(&mono, input_rate, target_rate);
+            let rms = compute_rms(&mono);
             let mut s = state.lock().unwrap();
             if s.recording {
                 s.audio_samples.extend_from_slice(&resampled);
+                s.audio_level = rms;
             }
         },
         |err| eprintln!("[audio] i16 ストリームエラー: {err}"),
@@ -150,9 +154,11 @@ fn build_stream_u16(
                 .collect();
             let mono = to_mono_f32(&floats, channels as usize);
             let resampled = resample(&mono, input_rate, target_rate);
+            let rms = compute_rms(&mono);
             let mut s = state.lock().unwrap();
             if s.recording {
                 s.audio_samples.extend_from_slice(&resampled);
+                s.audio_level = rms;
             }
         },
         |err| eprintln!("[audio] u16 ストリームエラー: {err}"),
@@ -160,7 +166,16 @@ fn build_stream_u16(
     )
 }
 
-// ─── ユーティリティ ──────────────────────────────────────────────────────
+// ─── ユーティリティ ──────────────────────────────────────────────────────────────────────
+
+/// モノラルf32サンプルから RMS（音量レベル）を計算する。
+fn compute_rms(samples: &[f32]) -> f32 {
+    if samples.is_empty() {
+        return 0.0;
+    }
+    let sum_sq: f32 = samples.iter().map(|s| s * s).sum();
+    (sum_sq / samples.len() as f32).sqrt()
+}
 
 /// インターリーブされたマルチチャンネルサンプルを mono (平均) に変換する。
 fn to_mono_f32(data: &[f32], channels: usize) -> Vec<f32> {

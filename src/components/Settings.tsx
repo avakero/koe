@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { emit } from "@tauri-apps/api/event";
 import {
   getApiKey,
   saveApiKey,
@@ -8,6 +9,8 @@ import {
   saveShortcut,
   getModel,
   saveModel,
+  getAccentColor,
+  saveAccentColor,
 } from "../lib/gemini";
 
 interface Props {
@@ -25,11 +28,21 @@ export default function Settings({ onBack }: Props) {
   const [saveMsg, setSaveMsg] = useState("");
   const [isMsgError, setIsMsgError] = useState(false);
   const [capturing, setCapturing] = useState(false);
+  const [accentColor, setAccentColor] = useState("ocean");
+
+  const colorPresets: Record<string, { label: string; colors: [string, string] }> = {
+    ocean: { label: "オーシャン", colors: ["#0ea5e9", "#6366f1"] },
+    sunset: { label: "サンセット", colors: ["#f97316", "#ec4899"] },
+    forest: { label: "フォレスト", colors: ["#10b981", "#06b6d4"] },
+    lavender: { label: "ラベンダー", colors: ["#8b5cf6", "#ec4899"] },
+    neon: { label: "ネオン", colors: ["#22d3ee", "#a855f7"] },
+  };
 
   useEffect(() => {
     getApiKey().then((k) => { if (k) setApiKey(k); });
     getShortcut().then((k) => setShortcut(k));
     getModel().then((m) => setModel(m));
+    getAccentColor().then((c) => setAccentColor(c));
 
     const ul1 = listen<number>("model-download-progress", ({ payload }) => {
       setDownloadProgress(payload);
@@ -303,6 +316,53 @@ export default function Settings({ onBack }: Props) {
             </p>
           </div>
         )}
+      </div>
+
+      {/* アクセントカラー */}
+      <div style={sectionStyle}>
+        <span style={labelStyle}>アクセントカラー</span>
+        <p style={{ fontSize: 12, color: "#718096", marginBottom: 10 }}>
+          フローティングモードのビジュアライザーの色を変更できます。
+        </p>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          {Object.entries(colorPresets).map(([key, { label, colors: [c1, c2] }]) => (
+            <div
+              key={key}
+              onClick={async () => {
+                setAccentColor(key);
+                await saveAccentColor(key);
+                await emit("accent-color-changed", key);
+                flash(`カラーを「${label}」に変更しました`);
+              }}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 4,
+                cursor: "pointer",
+              }}
+            >
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: "50%",
+                  background: `linear-gradient(135deg, ${c1}, ${c2})`,
+                  border: accentColor === key ? "3px solid #2d3748" : "2px solid transparent",
+                  boxShadow: accentColor === key ? `0 0 0 2px ${c1}40` : "none",
+                  transition: "all 0.2s",
+                }}
+              />
+              <span style={{
+                fontSize: 10,
+                color: accentColor === key ? "#2d3748" : "#a0aec0",
+                fontWeight: accentColor === key ? 600 : 400,
+              }}>
+                {label}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Gemini API キー */}

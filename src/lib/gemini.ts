@@ -41,6 +41,17 @@ export async function saveModel(model: "small" | "medium" | "large"): Promise<vo
   await store.save();
 }
 
+export async function getAccentColor(): Promise<string> {
+  const store = await getStore();
+  return (await store.get<string>("accentColor")) ?? "ocean";
+}
+
+export async function saveAccentColor(color: string): Promise<void> {
+  const store = await getStore();
+  await store.set("accentColor", color);
+  await store.save();
+}
+
 /**
  * Gemini API を呼び出して日本語テキストを整形する。
  * APIキーが未設定の場合は Error をスローする（呼び出し元でスキップ処理を行う）。

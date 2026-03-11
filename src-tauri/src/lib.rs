@@ -20,6 +20,7 @@ mod transcribe;
 pub struct AppState {
     pub recording: bool,
     pub audio_samples: Vec<f32>,
+    pub audio_level: f32,
 }
 
 pub type SharedState = Arc<Mutex<AppState>>;
@@ -57,6 +58,14 @@ async fn download_whisper_bin(app: tauri::AppHandle) -> Result<(), String> {
     transcribe::download_whisper_bin(&app)
         .await
         .map_err(|e| e.to_string())
+}
+
+/// フローティングウィンドウからの録音トグル
+#[tauri::command]
+async fn toggle_recording_command(app: tauri::AppHandle) -> Result<(), String> {
+    let state: SharedState = app.state::<SharedState>().inner().clone();
+    toggle_recording(app, state).await;
+    Ok(())
 }
 
 /// グローバルショートカットを再登録する。
@@ -202,13 +211,28 @@ pub fn run() {
                 }
             });
 
+            // 音声レベルをフローティングウィンドウに50ms間隔で送信
+            let app_handle = app.handle().clone();
+            let level_state = state.clone();
+            std::thread::spawn(move || {
+                loop {
+                    std::thread::sleep(std::time::Duration::from_millis(50));
+                    let level = {
+                        let s = level_state.lock().unwrap();
+                        if s.recording { s.audio_level } else { 0.0 }
+                    };
+                    let _ = app_handle.emit("audio-level", level);
+                }
+            });
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             paste_text,
             download_model,
             download_whisper_bin,
-            update_shortcut
+            update_shortcut,
+            toggle_recording_command
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
