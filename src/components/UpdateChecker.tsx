@@ -60,26 +60,43 @@ export default function UpdateChecker() {
         bottom: 16,
         right: 16,
         left: 16,
-        padding: "10px 16px",
-        borderRadius: 10,
-        background: "#ebf8ff",
-        border: "1px solid #90cdf4",
-        fontSize: 13,
-        color: "#2b6cb0",
+        padding: "12px 18px",
+        borderRadius: 2,
+        background: "rgba(0, 240, 255, 0.08)",
+        border: "1px solid rgba(0, 240, 255, 0.3)",
+        backdropFilter: "blur(10px)",
+        fontSize: 12,
+        fontFamily: "'Rajdhani', sans-serif",
+        fontWeight: 600,
+        color: "#00f0ff",
         zIndex: 1000,
+        animation: "fadeIn 0.3s ease-out",
+        boxShadow: "0 0 20px rgba(0, 240, 255, 0.1), 0 4px 12px rgba(0,0,0,0.3)",
       }}
     >
-      {state === "checking" && "🔍 更新を確認中..."}
-      {state === "available" && `✨ 新しいバージョン ${version} をダウンロード中...`}
+      {state === "checking" && (
+        <span style={{ letterSpacing: 1 }}>
+          <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 9, marginRight: 8, opacity: 0.7 }}>SYS</span>
+          更新を確認中...
+        </span>
+      )}
+      {state === "available" && (
+        <span style={{ letterSpacing: 0.5 }}>
+          <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 9, marginRight: 8, color: "#a855f7" }}>NEW</span>
+          v{version} をダウンロード中...
+        </span>
+      )}
       {state === "downloading" && (
         <div>
-          <div>⬇️ ダウンロード中... {progress}%</div>
+          <div style={{ marginBottom: 6 }}>
+            <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 9, marginRight: 8, color: "#ffe600" }}>DL</span>
+            ダウンロード中... <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{progress}%</span>
+          </div>
           <div
             style={{
-              marginTop: 6,
-              height: 4,
-              borderRadius: 2,
-              background: "#bee3f8",
+              height: 3,
+              borderRadius: 1,
+              background: "rgba(0, 240, 255, 0.1)",
               overflow: "hidden",
             }}
           >
@@ -87,16 +104,22 @@ export default function UpdateChecker() {
               style={{
                 width: `${progress}%`,
                 height: "100%",
-                background: "#3182ce",
+                background: "linear-gradient(90deg, #00f0ff, #a855f7)",
                 transition: "width 0.3s",
+                boxShadow: "0 0 8px rgba(0,240,255,0.5)",
               }}
             />
           </div>
         </div>
       )}
-      {state === "done" && "✅ 更新完了 — 再起動します..."}
+      {state === "done" && (
+        <span style={{ color: "#00ff88" }}>
+          <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 9, marginRight: 8 }}>OK</span>
+          更新完了 — 再起動します...
+        </span>
+      )}
       {error && (
-        <div style={{ fontSize: 11, color: "#c53030", marginTop: 4 }}>
+        <div style={{ fontSize: 10, color: "#ff6b8a", marginTop: 4 }}>
           {error}
         </div>
       )}

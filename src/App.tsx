@@ -14,21 +14,45 @@ type AppStatus =
   | "error";
 
 const STATUS_LABEL: Record<AppStatus, string> = {
-  idle: "待機中 — ショートカットで録音開始",
-  recording: "● 録音中...",
-  transcribing: "文字起こし中...",
-  formatting: "AI整形中...",
-  done: "完了",
-  error: "エラーが発生しました",
+  idle: "STANDBY — ショートカットで起動",
+  recording: "● REC...",
+  transcribing: "TRANSCRIBING...",
+  formatting: "AI PROCESSING...",
+  done: "COMPLETE",
+  error: "ERROR DETECTED",
 };
 
-const STATUS_COLOR: Record<AppStatus, string> = {
-  idle: "#666",
-  recording: "#e53e3e",
-  transcribing: "#d69e2e",
-  formatting: "#3182ce",
-  done: "#38a169",
-  error: "#e53e3e",
+const STATUS_CONFIG: Record<AppStatus, { color: string; glow: string; border: string }> = {
+  idle: {
+    color: "#6b7ea6",
+    glow: "none",
+    border: "rgba(0, 240, 255, 0.15)",
+  },
+  recording: {
+    color: "#ff3366",
+    glow: "0 0 15px rgba(255, 51, 102, 0.4), 0 0 30px rgba(255, 51, 102, 0.1)",
+    border: "rgba(255, 51, 102, 0.6)",
+  },
+  transcribing: {
+    color: "#ffe600",
+    glow: "0 0 15px rgba(255, 230, 0, 0.3), 0 0 30px rgba(255, 230, 0, 0.1)",
+    border: "rgba(255, 230, 0, 0.5)",
+  },
+  formatting: {
+    color: "#a855f7",
+    glow: "0 0 15px rgba(168, 85, 247, 0.3), 0 0 30px rgba(168, 85, 247, 0.1)",
+    border: "rgba(168, 85, 247, 0.5)",
+  },
+  done: {
+    color: "#00ff88",
+    glow: "0 0 15px rgba(0, 255, 136, 0.3), 0 0 30px rgba(0, 255, 136, 0.1)",
+    border: "rgba(0, 255, 136, 0.5)",
+  },
+  error: {
+    color: "#ff3366",
+    glow: "0 0 15px rgba(255, 51, 102, 0.4), 0 0 30px rgba(255, 51, 102, 0.1)",
+    border: "rgba(255, 51, 102, 0.6)",
+  },
 };
 
 export default function App() {
@@ -56,7 +80,6 @@ export default function App() {
             finalText = await formatWithGemini(payload);
           } catch (err) {
             console.warn("Gemini整形失敗、生テキストを使用:", err);
-            // Gemini失敗時は生テキストをそのまま使う
           }
         }
 
@@ -87,6 +110,8 @@ export default function App() {
     return <Settings onBack={() => setPage("main")} />;
   }
 
+  const cfg = STATUS_CONFIG[status];
+
   return (
     <div
       style={{
@@ -96,97 +121,176 @@ export default function App() {
         justifyContent: "center",
         minHeight: "100vh",
         padding: 32,
-        gap: 20,
+        gap: 24,
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <h1 style={{ fontSize: 28, fontWeight: 700 }}>🎙️ Koe</h1>
-
+      {/* Scanline overlay */}
       <div
         style={{
-          padding: "12px 24px",
-          borderRadius: 12,
-          background: "#fff",
-          border: `2px solid ${STATUS_COLOR[status]}`,
-          color: STATUS_COLOR[status],
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: "none",
+          zIndex: 100,
+          background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)",
+        }}
+      />
+
+      {/* Corner decorations */}
+      <div style={{ position: "fixed", top: 12, left: 12, width: 20, height: 20, borderLeft: "2px solid rgba(0,240,255,0.3)", borderTop: "2px solid rgba(0,240,255,0.3)", pointerEvents: "none" }} />
+      <div style={{ position: "fixed", top: 12, right: 12, width: 20, height: 20, borderRight: "2px solid rgba(0,240,255,0.3)", borderTop: "2px solid rgba(0,240,255,0.3)", pointerEvents: "none" }} />
+      <div style={{ position: "fixed", bottom: 12, left: 12, width: 20, height: 20, borderLeft: "2px solid rgba(0,240,255,0.3)", borderBottom: "2px solid rgba(0,240,255,0.3)", pointerEvents: "none" }} />
+      <div style={{ position: "fixed", bottom: 12, right: 12, width: 20, height: 20, borderRight: "2px solid rgba(0,240,255,0.3)", borderBottom: "2px solid rgba(0,240,255,0.3)", pointerEvents: "none" }} />
+
+      {/* Title */}
+      <div style={{ textAlign: "center" }}>
+        <h1
+          style={{
+            fontFamily: "'Orbitron', sans-serif",
+            fontSize: 32,
+            fontWeight: 900,
+            background: "linear-gradient(135deg, #00f0ff, #ff00aa)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            letterSpacing: 4,
+            animation: "glitch 3s infinite",
+          }}
+        >
+          KOE
+        </h1>
+        <div style={{ fontSize: 10, color: "#6b7ea6", letterSpacing: 3, fontWeight: 500, marginTop: 2, textTransform: "uppercase" }}>
+          Voice Recognition System v1.1
+        </div>
+      </div>
+
+      {/* Status display */}
+      <div
+        style={{
+          padding: "14px 28px",
+          borderRadius: 2,
+          background: "rgba(10, 10, 20, 0.8)",
+          border: `1px solid ${cfg.border}`,
+          color: cfg.color,
+          fontFamily: "'Orbitron', sans-serif",
           fontWeight: 600,
-          fontSize: 15,
-          minWidth: 280,
+          fontSize: 13,
+          minWidth: 300,
           textAlign: "center",
+          boxShadow: cfg.glow,
+          animation: status === "recording" ? "borderPulse 1.5s infinite" : status === "idle" ? "none" : "statusGlow 2s infinite",
+          transition: "all 0.3s ease",
+          position: "relative",
+          letterSpacing: 1,
         }}
       >
+        {/* Status indicator dot */}
+        <span
+          style={{
+            display: "inline-block",
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            background: cfg.color,
+            marginRight: 10,
+            boxShadow: `0 0 6px ${cfg.color}`,
+            animation: status !== "idle" ? "neonPulse 1s infinite" : "none",
+          }}
+        />
         {STATUS_LABEL[status]}
       </div>
 
+      {/* Error display */}
       {status === "error" && errorMsg && (
         <div
           style={{
-            background: "#fff5f5",
-            border: "1px solid #feb2b2",
-            borderRadius: 8,
+            background: "rgba(255, 51, 102, 0.1)",
+            border: "1px solid rgba(255, 51, 102, 0.4)",
+            borderRadius: 2,
             padding: "12px 16px",
-            maxWidth: 400,
-            fontSize: 13,
-            color: "#c53030",
+            maxWidth: 380,
+            fontSize: 12,
+            color: "#ff6b8a",
             wordBreak: "break-all",
             whiteSpace: "pre-wrap",
+            animation: "fadeIn 0.3s ease-out",
+            fontFamily: "'Rajdhani', sans-serif",
           }}
         >
-          <div style={{ fontSize: 11, color: "#e53e3e", marginBottom: 4, fontWeight: 600 }}>
-            エラー詳細
+          <div style={{ fontSize: 10, color: "#ff3366", marginBottom: 6, fontWeight: 700, letterSpacing: 1, fontFamily: "'Orbitron', sans-serif" }}>
+            ⚠ ERROR LOG
           </div>
-          {errorMsg}
+          <div style={{ borderLeft: "2px solid rgba(255,51,102,0.4)", paddingLeft: 10 }}>
+            {errorMsg}
+          </div>
         </div>
       )}
 
+      {/* Raw text display */}
       {rawText && status !== "idle" && (
         <div
           style={{
-            background: "#fff",
-            border: "1px solid #e2e8f0",
-            borderRadius: 8,
+            background: "rgba(0, 240, 255, 0.05)",
+            border: "1px solid rgba(0, 240, 255, 0.2)",
+            borderRadius: 2,
             padding: "12px 16px",
-            maxWidth: 400,
+            maxWidth: 380,
             fontSize: 13,
-            color: "#4a5568",
+            color: "#c0ccf0",
             wordBreak: "break-all",
+            animation: "fadeIn 0.3s ease-out",
+            fontFamily: "'Rajdhani', sans-serif",
           }}
         >
-          <div style={{ fontSize: 11, color: "#a0aec0", marginBottom: 4 }}>
-            認識テキスト
+          <div style={{ fontSize: 10, color: "#00f0ff", marginBottom: 6, fontWeight: 700, letterSpacing: 1, fontFamily: "'Orbitron', sans-serif" }}>
+            OUTPUT
           </div>
-          {rawText}
+          <div style={{ borderLeft: "2px solid rgba(0,240,255,0.3)", paddingLeft: 10 }}>
+            {rawText}
+          </div>
         </div>
       )}
 
-      <button
-        onClick={() => setPage("settings")}
-        style={{ marginTop: 12, fontSize: 13, color: "#666" }}
-      >
-        ⚙️ 設定
-      </button>
+      {/* Action buttons */}
+      <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
+        <button
+          onClick={() => setPage("settings")}
+          style={{
+            fontSize: 13,
+            color: "#6b7ea6",
+            border: "1px solid rgba(0,240,255,0.15)",
+            padding: "8px 16px",
+          }}
+        >
+          ⚙ CONFIG
+        </button>
 
-      <button
-        onClick={async () => {
-          try {
-            await invoke("switch_to_floating");
-          } catch (e) {
-            console.error("フローティングモード切替失敗:", e);
-          }
-        }}
-        style={{
-          marginTop: 8,
-          fontSize: 13,
-          color: "#fff",
-          background: "linear-gradient(135deg, #0ea5e9, #6366f1)",
-          border: "none",
-          borderRadius: 8,
-          padding: "8px 18px",
-          fontWeight: 600,
-          cursor: "pointer",
-        }}
-      >
-        🎙️ フローティングモード
-      </button>
+        <button
+          onClick={async () => {
+            try {
+              await invoke("switch_to_floating");
+            } catch (e) {
+              console.error("フローティングモード切替失敗:", e);
+            }
+          }}
+          style={{
+            fontSize: 13,
+            color: "#0a0a0f",
+            background: "linear-gradient(135deg, #00f0ff, #a855f7)",
+            border: "none",
+            borderRadius: 2,
+            padding: "8px 20px",
+            fontWeight: 700,
+            letterSpacing: 1,
+            boxShadow: "0 0 15px rgba(0, 240, 255, 0.3), 0 0 30px rgba(0, 240, 255, 0.1)",
+          }}
+        >
+          ◈ FLOAT MODE
+        </button>
+      </div>
 
       <UpdateChecker />
     </div>

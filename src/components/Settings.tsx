@@ -31,11 +31,11 @@ export default function Settings({ onBack }: Props) {
   const [accentColor, setAccentColor] = useState("ocean");
 
   const colorPresets: Record<string, { label: string; colors: [string, string] }> = {
-    ocean: { label: "オーシャン", colors: ["#0ea5e9", "#6366f1"] },
-    sunset: { label: "サンセット", colors: ["#f97316", "#ec4899"] },
-    forest: { label: "フォレスト", colors: ["#10b981", "#06b6d4"] },
-    lavender: { label: "ラベンダー", colors: ["#8b5cf6", "#ec4899"] },
-    neon: { label: "ネオン", colors: ["#22d3ee", "#a855f7"] },
+    ocean: { label: "オーシャン", colors: ["#00f0ff", "#a855f7"] },
+    sunset: { label: "サンセット", colors: ["#ff6b35", "#ff00aa"] },
+    forest: { label: "フォレスト", colors: ["#00ff88", "#00f0ff"] },
+    lavender: { label: "ラベンダー", colors: ["#a855f7", "#ff00aa"] },
+    neon: { label: "ネオン", colors: ["#00f0ff", "#ff00aa"] },
   };
 
   useEffect(() => {
@@ -55,12 +55,9 @@ export default function Settings({ onBack }: Props) {
     return () => { ul1.then((fn) => fn()); ul2.then((fn) => fn()); };
   }, []);
 
-  // キーキャプチャ: keydown イベントを Tauri 形式のショートカット文字列に変換
   const handleKeyCapture = (e: React.KeyboardEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
-    // 修飾キーだけが押された場合は無視（通常キーと組み合わせを待つ）
     if (["Control", "Shift", "Alt", "Meta"].includes(e.key)) return;
 
     const parts: string[] = [];
@@ -68,24 +65,16 @@ export default function Settings({ onBack }: Props) {
     if (e.shiftKey) parts.push("Shift");
     if (e.altKey) parts.push("Alt");
 
-    // キー名を Tauri 形式に変換
     const keyMap: Record<string, string> = {
-      " ": "Space",
-      "ArrowUp": "Up", "ArrowDown": "Down",
+      " ": "Space", "ArrowUp": "Up", "ArrowDown": "Down",
       "ArrowLeft": "Left", "ArrowRight": "Right",
       "Escape": "Escape", "Enter": "Enter",
-      "Backspace": "Backspace", "Delete": "Delete",
-      "Tab": "Tab",
+      "Backspace": "Backspace", "Delete": "Delete", "Tab": "Tab",
     };
 
     let keyName = keyMap[e.key] || e.key;
-    // 英字は大文字に統一
     if (keyName.length === 1 && /[a-zA-Z]/.test(keyName)) {
       keyName = keyName.toUpperCase();
-    }
-    // F1-F24 はそのまま
-    if (/^F\d{1,2}$/.test(keyName)) {
-      // OK
     }
 
     parts.push(keyName);
@@ -140,54 +129,93 @@ export default function Settings({ onBack }: Props) {
   };
 
   const sectionStyle: React.CSSProperties = {
-    background: "#fff",
-    border: "1px solid #e2e8f0",
-    borderRadius: 10,
+    background: "rgba(15, 15, 35, 0.7)",
+    border: "1px solid rgba(0, 240, 255, 0.12)",
+    borderRadius: 2,
     padding: 16,
     marginBottom: 16,
+    backdropFilter: "blur(10px)",
+    position: "relative",
+    overflow: "hidden",
   };
 
   const labelStyle: React.CSSProperties = {
-    fontSize: 12,
+    fontSize: 10,
+    fontFamily: "'Orbitron', sans-serif",
     fontWeight: 600,
-    color: "#718096",
+    color: "#00f0ff",
     textTransform: "uppercase",
-    letterSpacing: 0.5,
+    letterSpacing: 2,
     marginBottom: 8,
     display: "block",
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 480, margin: "0 auto" }}>
+    <div style={{ padding: 24, maxWidth: 480, margin: "0 auto", position: "relative" }}>
+      {/* Scanline overlay */}
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          pointerEvents: "none",
+          zIndex: 100,
+          background: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)",
+        }}
+      />
+
+      {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-        <button onClick={onBack} style={{ padding: "4px 10px" }}>
-          ← 戻る
+        <button
+          onClick={onBack}
+          style={{
+            padding: "6px 14px",
+            fontSize: 12,
+            border: "1px solid rgba(0,240,255,0.2)",
+            color: "#00f0ff",
+          }}
+        >
+          ← BACK
         </button>
-        <h2 style={{ fontSize: 18, fontWeight: 700 }}>設定</h2>
+        <h2 style={{
+          fontFamily: "'Orbitron', sans-serif",
+          fontSize: 18,
+          fontWeight: 700,
+          background: "linear-gradient(135deg, #00f0ff, #a855f7)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          letterSpacing: 3,
+        }}>CONFIG</h2>
       </div>
 
+      {/* Flash message */}
       {saveMsg && (
         <div
           style={{
-            background: isMsgError ? "#fff5f5" : "#ebf8ff",
-            border: `1px solid ${isMsgError ? "#feb2b2" : "#bee3f8"}`,
-            borderRadius: 6,
-            padding: "8px 12px",
+            background: isMsgError ? "rgba(255,51,102,0.1)" : "rgba(0,240,255,0.1)",
+            border: `1px solid ${isMsgError ? "rgba(255,51,102,0.4)" : "rgba(0,240,255,0.3)"}`,
+            borderRadius: 2,
+            padding: "8px 14px",
             marginBottom: 16,
-            fontSize: 13,
-            color: isMsgError ? "#c53030" : "#2b6cb0",
+            fontSize: 12,
+            fontWeight: 600,
+            color: isMsgError ? "#ff6b8a" : "#00f0ff",
             whiteSpace: "pre-wrap",
             wordBreak: "break-all",
+            animation: "fadeIn 0.2s ease-out",
+            fontFamily: "'Rajdhani', sans-serif",
           }}
         >
-          {saveMsg}
+          {isMsgError ? "⚠ " : "✓ "}{saveMsg}
         </div>
       )}
 
-      {/* ショートカット設定 */}
+      {/* Shortcut */}
       <div style={sectionStyle}>
-        <span style={labelStyle}>グローバルショートカット</span>
-        <p style={{ fontSize: 12, color: "#718096", marginBottom: 10 }}>
+        <span style={labelStyle}>Global Shortcut</span>
+        <p style={{ fontSize: 12, color: "#6b7ea6", marginBottom: 10 }}>
           録音開始/停止のショートカットキー。下のボタンを押してからキーを入力してください。
         </p>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -198,30 +226,33 @@ export default function Settings({ onBack }: Props) {
             onClick={() => setCapturing(true)}
             style={{
               flex: 1,
-              padding: "8px 12px",
-              borderRadius: 6,
-              border: capturing ? "2px solid #4299e1" : "1px solid #e2e8f0",
-              background: capturing ? "#ebf8ff" : "#f7fafc",
+              padding: "10px 14px",
+              borderRadius: 2,
+              border: capturing ? "1px solid #00f0ff" : "1px solid rgba(0,240,255,0.15)",
+              background: capturing ? "rgba(0,240,255,0.08)" : "rgba(10,10,20,0.6)",
               fontSize: 14,
+              fontFamily: "'Orbitron', sans-serif",
               fontWeight: 600,
               textAlign: "center",
               cursor: "pointer",
               outline: "none",
-              color: capturing ? "#2b6cb0" : "#2d3748",
+              color: capturing ? "#00f0ff" : "#e0e6ff",
               transition: "all 0.2s",
               userSelect: "none",
+              boxShadow: capturing ? "0 0 15px rgba(0,240,255,0.2)" : "none",
+              letterSpacing: 1,
             }}
           >
-            {capturing ? "🎹 キーを押してください..." : shortcut}
+            {capturing ? "⌨ キーを入力..." : shortcut}
           </div>
-          <button onClick={handleShortcutSave}>更新</button>
+          <button onClick={handleShortcutSave}>SET</button>
         </div>
       </div>
 
-      {/* モデル選択 */}
+      {/* Model */}
       <div style={sectionStyle}>
-        <span style={labelStyle}>Whisper モデル</span>
-        <p style={{ fontSize: 12, color: "#718096", marginBottom: 10 }}>
+        <span style={labelStyle}>Whisper Model</span>
+        <p style={{ fontSize: 12, color: "#6b7ea6", marginBottom: 10 }}>
           初回のみダウンロードが必要です。モデルは App データフォルダに保存されます。
         </p>
         <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
@@ -235,96 +266,93 @@ export default function Settings({ onBack }: Props) {
             <option value="large">large — 2.9 GB</option>
           </select>
           <button onClick={handleModelDownload} disabled={downloading}>
-            {downloading ? "DL中..." : "ダウンロード"}
+            {downloading ? "DL..." : "DOWNLOAD"}
           </button>
         </div>
         {downloadProgress !== null && (
           <div>
-            <div
-              style={{
-                height: 6,
-                background: "#e2e8f0",
-                borderRadius: 3,
-                overflow: "hidden",
-              }}
-            >
+            <div style={{ height: 4, background: "rgba(0,240,255,0.1)", borderRadius: 1, overflow: "hidden" }}>
               <div
                 style={{
                   height: "100%",
                   width: `${downloadProgress}%`,
-                  background: "#4299e1",
+                  background: "linear-gradient(90deg, #00f0ff, #a855f7)",
                   transition: "width 0.3s",
+                  boxShadow: "0 0 10px rgba(0,240,255,0.5)",
                 }}
               />
             </div>
-            <p style={{ fontSize: 12, color: "#718096", marginTop: 4 }}>
-              {downloadProgress < 100
-                ? `${downloadProgress.toFixed(1)}% ダウンロード中...`
-                : "ダウンロード完了"}
+            <p style={{ fontSize: 11, color: "#6b7ea6", marginTop: 4, fontFamily: "'Orbitron', sans-serif" }}>
+              {downloadProgress < 100 ? `${downloadProgress.toFixed(1)}%` : "COMPLETE"}
             </p>
           </div>
         )}
-        <table style={{ width: "100%", fontSize: 11, color: "#718096", borderCollapse: "collapse", marginTop: 8 }}>
+        <table style={{ width: "100%", fontSize: 11, color: "#6b7ea6", borderCollapse: "collapse", marginTop: 10 }}>
           <thead>
-            <tr style={{ borderBottom: "1px solid #e2e8f0", textAlign: "left" }}>
-              <th style={{ padding: "4px 6px", fontWeight: 600 }}>モデル</th>
-              <th style={{ padding: "4px 6px", fontWeight: 600 }}>精度</th>
-              <th style={{ padding: "4px 6px", fontWeight: 600 }}>速度</th>
-              <th style={{ padding: "4px 6px", fontWeight: 600 }}>推奨RAM</th>
+            <tr style={{ borderBottom: "1px solid rgba(0,240,255,0.1)", textAlign: "left" }}>
+              <th style={{ padding: "6px 8px", fontWeight: 700, color: "#00f0ff", fontFamily: "'Orbitron', sans-serif", fontSize: 9, letterSpacing: 1 }}>MODEL</th>
+              <th style={{ padding: "6px 8px", fontWeight: 700, color: "#00f0ff", fontFamily: "'Orbitron', sans-serif", fontSize: 9, letterSpacing: 1 }}>ACCURACY</th>
+              <th style={{ padding: "6px 8px", fontWeight: 700, color: "#00f0ff", fontFamily: "'Orbitron', sans-serif", fontSize: 9, letterSpacing: 1 }}>SPEED</th>
+              <th style={{ padding: "6px 8px", fontWeight: 700, color: "#00f0ff", fontFamily: "'Orbitron', sans-serif", fontSize: 9, letterSpacing: 1 }}>RAM</th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderBottom: "1px solid #f7fafc" }}>
-              <td style={{ padding: "4px 6px", fontWeight: 600 }}>small</td>
-              <td style={{ padding: "4px 6px" }}>日常会話に十分</td>
-              <td style={{ padding: "4px 6px" }}>速い</td>
-              <td style={{ padding: "4px 6px" }}>~1 GB</td>
+            <tr style={{ borderBottom: "1px solid rgba(0,240,255,0.05)" }}>
+              <td style={{ padding: "6px 8px", fontWeight: 600, color: "#e0e6ff" }}>small</td>
+              <td style={{ padding: "6px 8px" }}>日常会話に十分</td>
+              <td style={{ padding: "6px 8px", color: "#00ff88" }}>▲ 高速</td>
+              <td style={{ padding: "6px 8px" }}>~1 GB</td>
             </tr>
-            <tr style={{ borderBottom: "1px solid #f7fafc" }}>
-              <td style={{ padding: "4px 6px", fontWeight: 600 }}>medium</td>
-              <td style={{ padding: "4px 6px" }}>専門用語に強い</td>
-              <td style={{ padding: "4px 6px" }}>普通</td>
-              <td style={{ padding: "4px 6px" }}>~2.5 GB</td>
+            <tr style={{ borderBottom: "1px solid rgba(0,240,255,0.05)" }}>
+              <td style={{ padding: "6px 8px", fontWeight: 600, color: "#e0e6ff" }}>medium</td>
+              <td style={{ padding: "6px 8px" }}>専門用語に強い</td>
+              <td style={{ padding: "6px 8px", color: "#ffe600" }}>◆ 普通</td>
+              <td style={{ padding: "6px 8px" }}>~2.5 GB</td>
             </tr>
             <tr>
-              <td style={{ padding: "4px 6px", fontWeight: 600 }}>large</td>
-              <td style={{ padding: "4px 6px" }}>最高精度</td>
-              <td style={{ padding: "4px 6px" }}>遅い</td>
-              <td style={{ padding: "4px 6px" }}>~5 GB</td>
+              <td style={{ padding: "6px 8px", fontWeight: 600, color: "#e0e6ff" }}>large</td>
+              <td style={{ padding: "6px 8px" }}>最高精度</td>
+              <td style={{ padding: "6px 8px", color: "#ff6b8a" }}>▼ 低速</td>
+              <td style={{ padding: "6px 8px" }}>~5 GB</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      {/* whisper-cli バイナリ */}
+      {/* Whisper CLI binary */}
       <div style={sectionStyle}>
-        <span style={labelStyle}>Whisper CLI バイナリ（初回のみ）</span>
-        <p style={{ fontSize: 12, color: "#718096", marginBottom: 10 }}>
-          音声認識エンジン本体です。モデルより先にダウンロードしてください。
-          約 10〜30 MB。
+        <span style={labelStyle}>Whisper CLI Binary</span>
+        <p style={{ fontSize: 12, color: "#6b7ea6", marginBottom: 10 }}>
+          音声認識エンジン本体。モデルより先にダウンロードしてください。約 10〜30 MB。
         </p>
         <button onClick={handleBinDownload} disabled={binDownloading}>
-          {binDownloading ? "DL中..." : "whisper-cli をダウンロード"}
+          {binDownloading ? "DL..." : "⬇ DOWNLOAD WHISPER-CLI"}
         </button>
         {binProgress !== null && (
           <div style={{ marginTop: 8 }}>
-            <div style={{ height: 6, background: "#e2e8f0", borderRadius: 3, overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${binProgress}%`, background: "#68d391", transition: "width 0.3s" }} />
+            <div style={{ height: 4, background: "rgba(0,255,136,0.1)", borderRadius: 1, overflow: "hidden" }}>
+              <div style={{
+                height: "100%",
+                width: `${binProgress}%`,
+                background: "linear-gradient(90deg, #00ff88, #00f0ff)",
+                transition: "width 0.3s",
+                boxShadow: "0 0 10px rgba(0,255,136,0.5)",
+              }} />
             </div>
-            <p style={{ fontSize: 12, color: "#718096", marginTop: 4 }}>
-              {binProgress < 100 ? `${binProgress.toFixed(1)}%...` : "完了"}
+            <p style={{ fontSize: 11, color: "#6b7ea6", marginTop: 4, fontFamily: "'Orbitron', sans-serif" }}>
+              {binProgress < 100 ? `${binProgress.toFixed(1)}%` : "COMPLETE"}
             </p>
           </div>
         )}
       </div>
 
-      {/* アクセントカラー */}
+      {/* Accent color */}
       <div style={sectionStyle}>
-        <span style={labelStyle}>アクセントカラー</span>
-        <p style={{ fontSize: 12, color: "#718096", marginBottom: 10 }}>
+        <span style={labelStyle}>Accent Color</span>
+        <p style={{ fontSize: 12, color: "#6b7ea6", marginBottom: 12 }}>
           フローティングモードのビジュアライザーの色を変更できます。
         </p>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
           {Object.entries(colorPresets).map(([key, { label, colors: [c1, c2] }]) => (
             <div
               key={key}
@@ -346,17 +374,19 @@ export default function Settings({ onBack }: Props) {
                 style={{
                   width: 36,
                   height: 36,
-                  borderRadius: "50%",
+                  borderRadius: 2,
                   background: `linear-gradient(135deg, ${c1}, ${c2})`,
-                  border: accentColor === key ? "3px solid #2d3748" : "2px solid transparent",
-                  boxShadow: accentColor === key ? `0 0 0 2px ${c1}40` : "none",
+                  border: accentColor === key ? `2px solid ${c1}` : "1px solid rgba(255,255,255,0.1)",
+                  boxShadow: accentColor === key ? `0 0 12px ${c1}60` : "none",
                   transition: "all 0.2s",
                 }}
               />
               <span style={{
-                fontSize: 10,
-                color: accentColor === key ? "#2d3748" : "#a0aec0",
-                fontWeight: accentColor === key ? 600 : 400,
+                fontSize: 9,
+                fontFamily: "'Orbitron', sans-serif",
+                color: accentColor === key ? "#e0e6ff" : "#6b7ea6",
+                fontWeight: accentColor === key ? 700 : 400,
+                letterSpacing: 0.5,
               }}>
                 {label}
               </span>
@@ -365,17 +395,17 @@ export default function Settings({ onBack }: Props) {
         </div>
       </div>
 
-      {/* Gemini API キー */}
+      {/* Gemini API Key */}
       <div style={sectionStyle}>
-        <span style={labelStyle}>Gemini API キー（任意）</span>
-        <p style={{ fontSize: 12, color: "#718096", marginBottom: 10 }}>
+        <span style={labelStyle}>Gemini API Key</span>
+        <p style={{ fontSize: 12, color: "#6b7ea6", marginBottom: 10 }}>
           未入力の場合、Whisper の認識テキストをそのままペーストします。
           <br />
           <a
             href="https://aistudio.google.com/app/apikey"
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: "#4299e1" }}
+            style={{ color: "#00f0ff" }}
           >
             Google AI Studio でキーを取得 →
           </a>
@@ -387,7 +417,7 @@ export default function Settings({ onBack }: Props) {
           placeholder="AIza... （省略可）"
           style={{ marginBottom: 8 }}
         />
-        <button onClick={handleApiKeySave}>保存</button>
+        <button onClick={handleApiKeySave}>SAVE</button>
       </div>
     </div>
   );
