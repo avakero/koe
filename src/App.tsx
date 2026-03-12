@@ -4,8 +4,6 @@ import { invoke } from "@tauri-apps/api/core";
 import { formatWithGemini, getApiKey } from "./lib/gemini";
 import Settings from "./components/Settings";
 import UpdateChecker from "./components/UpdateChecker";
-import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
-import { getCurrentWindow } from "@tauri-apps/api/window";
 
 type AppStatus =
   | "idle"
@@ -170,12 +168,7 @@ export default function App() {
       <button
         onClick={async () => {
           try {
-            const floating = await WebviewWindow.getByLabel("floating");
-            if (floating) {
-              await floating.show();
-              await floating.setFocus();
-            }
-            await getCurrentWindow().hide();
+            await invoke("switch_to_floating");
           } catch (e) {
             console.error("フローティングモード切替失敗:", e);
           }

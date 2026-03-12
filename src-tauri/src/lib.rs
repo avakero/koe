@@ -68,6 +68,32 @@ async fn toggle_recording_command(app: tauri::AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+/// メインウィンドウからフローティングモードに切り替え
+#[tauri::command]
+async fn switch_to_floating(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(floating) = app.get_webview_window("floating") {
+        floating.show().map_err(|e| e.to_string())?;
+        floating.set_focus().map_err(|e| e.to_string())?;
+    }
+    if let Some(main_win) = app.get_webview_window("main") {
+        main_win.hide().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+/// フローティングモードからメインウィンドウに戻す
+#[tauri::command]
+async fn switch_to_main(app: tauri::AppHandle) -> Result<(), String> {
+    if let Some(main_win) = app.get_webview_window("main") {
+        main_win.show().map_err(|e| e.to_string())?;
+        main_win.set_focus().map_err(|e| e.to_string())?;
+    }
+    if let Some(floating) = app.get_webview_window("floating") {
+        floating.hide().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
 /// グローバルショートカットを再登録する。
 /// shortcut: "Ctrl+Shift+K", "Ctrl+Shift+Space" など
 #[tauri::command]
@@ -232,7 +258,9 @@ pub fn run() {
             download_model,
             download_whisper_bin,
             update_shortcut,
-            toggle_recording_command
+            toggle_recording_command,
+            switch_to_floating,
+            switch_to_main
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
