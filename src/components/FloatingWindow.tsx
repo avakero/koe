@@ -205,6 +205,11 @@ export default function FloatingWindow() {
 
     // Drag handler
     const handleMouseDown = useCallback(async (e: React.MouseEvent) => {
+        // SVGやボタンクリック時はドラッグを開始しない
+        if ((e.target as HTMLElement).closest("button") || (e.target as HTMLElement).tagName.toLowerCase() === "svg") {
+            return;
+        }
+
         isDraggingRef.current = false;
         const startX = e.screenX;
         const startY = e.screenY;
@@ -218,34 +223,79 @@ export default function FloatingWindow() {
         const onMouseUp = () => {
             document.removeEventListener("mousemove", onMouseMove);
             document.removeEventListener("mouseup", onMouseUp);
-            // Reset drag flag after a tick so click handler can check it
             setTimeout(() => { isDraggingRef.current = false; }, 50);
         };
 
         document.addEventListener("mousemove", onMouseMove);
         document.addEventListener("mouseup", onMouseUp);
 
-        // Use Tauri window drag
-        await getCurrentWindow().startDragging();
+        // Tauri v2 の startDragging を呼び出す
+        try {
+            await getCurrentWindow().startDragging();
+        } catch (err) {
+            console.error("Drag error:", err);
+        }
+    }, []);
+
+    // mainに戻るボタンのハンドラ
+    const handleClose = useCallback(async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        try {
+            await invoke("switch_to_main");
+        } catch (err) {
+            console.error("Close failed:", err);
+        }
     }, []);
 
     return (
-        <div
-            style={{
-                width: 140,
-                height: 140,
-                borderRadius: "50%",
-                overflow: "hidden",
-                cursor: "pointer",
-            } as React.CSSProperties}
-            onClick={handleClick}
-            onMouseDown={handleMouseDown}
-            data-tauri-drag-region="no-drag"
-        >
-            <canvas
-                ref={canvasRef}
-                style={{ width: 140, height: 140, display: "block" }}
-            />
+        <div style={{ position: "relative", width: 140, height: 140 }}>
+            {/* 閉じる（メイン画面へ戻る）ボタン */}
+            <button
+                onClick={handleClose}
+                style={{
+                    position: "absolute",
+                    top: 2,
+                    right: 2,
+                    width: 24,
+                    height: 24,
+                    borderRadius: "50%",
+                    background: "rgba(0,0,0,0.5)",
+                    border: "none",
+                    color: "#fff",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    zIndex: 10,
+                    transition: "background 0.2s",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = "rgba(0,0,0,0.8)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "rgba(0,0,0,0.5)"; }}
+                title="メイン画面に戻る"
+            >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <div
+                style={{
+                    width: 140,
+                    height: 140,
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    cursor: isDraggingRef.current ? "grabbing" : "grab",
+                } as React.CSSProperties}
+                onClick={handleClick}
+                onMouseDown={handleMouseDown}
+                data-tauri-drag-region
+            >
+                <canvas
+                    ref={canvasRef}
+                    style={{ width: 140, height: 140, display: "block", pointerEvents: "none" }}
+                />
+            </div>
         </div>
     );
 }

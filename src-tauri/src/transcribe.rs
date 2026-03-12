@@ -11,6 +11,9 @@ use std::path::PathBuf;
 use tauri::{Emitter, Manager};
 use tauri_plugin_store::StoreExt;
 
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
+
 // ─── モデル情報 ───────────────────────────────────────────────────────────
 
 struct ModelInfo {
@@ -261,16 +264,23 @@ pub async fn run_whisper(
     // whisper-cli は CPU バウンドなので blocking スレッドで実行
     tokio::task::spawn_blocking(move || -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
         // whisper-cli -m model.bin -l ja --output-txt -f audio.wav
-        let output = std::process::Command::new(&bin)
-            .arg("-m").arg(&model)
-            .arg("-l").arg("ja")
-            .arg("-f").arg(&wav)
-            .arg("--output-txt")
-            .arg("--no-timestamps")
-            // 出力ファイルを同じディレクトリに作成
-            .arg("-of").arg(wav.with_extension(""))
-            .output()
-            .map_err(|e| format!("whisper-cli 起動失敗: {e}"))?;
+        let mut cmd = std::process::Command::new(&bin);
+        cmd.arg("-m").arg(&model)
+           .arg("-l").arg("ja")
+           .arg("-f").arg(&wav)
+           .arg("--output-txt")
+           .arg("--no-timestamps")
+           // 出力ファイルを同じディレクトリに作成
+           .arg("-of").arg(wav.with_extension(""));
+
+        // Windows の場合、黒いコマンドプロンプト画面が開かないように CREATE_NO_WINDOW フラグ (0x08000000) を設定
+        #[cfg(target_os = "windows")]
+        {
+            const CREATE_NO_WINDOW: u32 = 0x08000000;
+            cmd.creation_flags(CREATE_NO_WINDOW);
+        }
+
+        let output = cmd.output().map_err(|e| format!("whisper-cli 起動失敗: {e}"))?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);

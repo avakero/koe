@@ -18,6 +18,10 @@
     "store:allow-save",
     "store:allow-delete",
     "shell:allow-open",
-    "updater:default"
+    "updater:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-hide",
+    "core:window:allow-show",
+    "core:window:allow-set-focus"
   ]
 }
