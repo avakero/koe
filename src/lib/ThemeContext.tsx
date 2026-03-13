@@ -15,12 +15,12 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "cyberpunk",
+  theme: "simple",
   setTheme: async () => {},
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeId>("cyberpunk");
+  const [theme, setThemeState] = useState<ThemeId>("simple");
 
   // 初回読み込み
   useEffect(() => {
@@ -32,10 +32,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
           setThemeState(saved);
           applyTheme(saved);
         } else {
-          applyTheme("cyberpunk");
+          applyTheme("simple");
         }
       } catch {
-        applyTheme("cyberpunk");
+        applyTheme("simple");
       }
     })();
   }, []);

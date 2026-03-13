@@ -779,7 +779,8 @@ export default function FloatingWindow() {
     }, [status, colors, theme]);
 
     // Click handler
-    const handleClick = useCallback(async () => {
+    const handleClick = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.currentTarget.blur();
         try {
             await invoke("toggle_recording_command");
         } catch (e) {
@@ -788,8 +789,9 @@ export default function FloatingWindow() {
     }, []);
 
     // mainに戻るボタンのハンドラ
-    const handleClose = useCallback(async (e: React.MouseEvent) => {
+    const handleClose = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
+        e.currentTarget.blur();
         try {
             await invoke("switch_to_main");
         } catch (err) {
