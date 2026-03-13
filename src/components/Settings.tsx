@@ -384,6 +384,7 @@ export default function Settings({ onBack }: Props) {
                 {isCyberpunk ? "SPEED" : "速度"}
               </th>
               <th style={{ padding: "6px 8px", fontWeight: 700, color: "var(--t-primary)", fontFamily: "var(--t-font-display)", fontSize: "var(--t-label-size)", letterSpacing: "var(--t-label-spacing)" }}>RAM</th>
+              <th style={{ padding: "6px 8px", fontWeight: 700, color: "var(--t-primary)", fontFamily: "var(--t-font-display)", fontSize: "var(--t-label-size)", letterSpacing: "var(--t-label-spacing)" }}>GPU</th>
             </tr>
           </thead>
           <tbody>
@@ -392,18 +393,21 @@ export default function Settings({ onBack }: Props) {
               <td style={{ padding: "6px 8px" }}>日常会話に十分</td>
               <td style={{ padding: "6px 8px", color: "var(--t-success)" }}>▲ 高速</td>
               <td style={{ padding: "6px 8px" }}>~1 GB</td>
+              <td style={{ padding: "6px 8px" }}>RTX 2060相当</td>
             </tr>
             <tr style={{ borderBottom: "1px solid var(--t-border)" }}>
               <td style={{ padding: "6px 8px", fontWeight: 600, color: "var(--t-text)" }}>medium</td>
               <td style={{ padding: "6px 8px" }}>専門用語に強い</td>
               <td style={{ padding: "6px 8px", color: "var(--t-warning)" }}>◆ 普通</td>
               <td style={{ padding: "6px 8px" }}>~2.5 GB</td>
+              <td style={{ padding: "6px 8px" }}>RTX 3060相当</td>
             </tr>
             <tr>
               <td style={{ padding: "6px 8px", fontWeight: 600, color: "var(--t-text)" }}>large</td>
               <td style={{ padding: "6px 8px" }}>最高精度</td>
               <td style={{ padding: "6px 8px", color: "var(--t-danger)" }}>▼ 低速</td>
               <td style={{ padding: "6px 8px" }}>~5 GB</td>
+              <td style={{ padding: "6px 8px" }}>RTX 3080相当</td>
             </tr>
           </tbody>
         </table>
