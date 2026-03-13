@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { useTheme } from "../lib/ThemeContext";
 
 type UpdateState = "idle" | "checking" | "available" | "downloading" | "done";
 
 export default function UpdateChecker() {
+  const { theme } = useTheme();
   const [state, setState] = useState<UpdateState>("idle");
   const [progress, setProgress] = useState(0);
   const [version, setVersion] = useState("");
   const [error, setError] = useState("");
+
+  const isCyberpunk = theme === "cyberpunk";
 
   useEffect(() => {
     const timer = setTimeout(() => checkForUpdate(), 3000);
@@ -61,42 +65,42 @@ export default function UpdateChecker() {
         right: 16,
         left: 16,
         padding: "12px 18px",
-        borderRadius: 2,
-        background: "rgba(0, 240, 255, 0.08)",
-        border: "1px solid rgba(0, 240, 255, 0.3)",
-        backdropFilter: "blur(10px)",
+        borderRadius: "var(--t-radius-lg)",
+        background: "var(--t-bg-card)",
+        border: "1px solid var(--t-border)",
+        backdropFilter: "var(--t-section-backdrop)",
         fontSize: 12,
-        fontFamily: "'Rajdhani', sans-serif",
+        fontFamily: "var(--t-font-body)",
         fontWeight: 600,
-        color: "#00f0ff",
+        color: "var(--t-primary)",
         zIndex: 1000,
         animation: "fadeIn 0.3s ease-out",
-        boxShadow: "0 0 20px rgba(0, 240, 255, 0.1), 0 4px 12px rgba(0,0,0,0.3)",
+        boxShadow: "var(--t-glow)",
       }}
     >
       {state === "checking" && (
-        <span style={{ letterSpacing: 1 }}>
-          <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 9, marginRight: 8, opacity: 0.7 }}>SYS</span>
+        <span style={{ letterSpacing: isCyberpunk ? 1 : 0 }}>
+          {isCyberpunk && <span style={{ fontFamily: "var(--t-font-display)", fontSize: 9, marginRight: 8, opacity: 0.7 }}>SYS</span>}
           更新を確認中...
         </span>
       )}
       {state === "available" && (
-        <span style={{ letterSpacing: 0.5 }}>
-          <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 9, marginRight: 8, color: "#a855f7" }}>NEW</span>
+        <span style={{ letterSpacing: isCyberpunk ? 0.5 : 0 }}>
+          {isCyberpunk && <span style={{ fontFamily: "var(--t-font-display)", fontSize: 9, marginRight: 8, color: "var(--t-accent)" }}>NEW</span>}
           v{version} をダウンロード中...
         </span>
       )}
       {state === "downloading" && (
         <div>
           <div style={{ marginBottom: 6 }}>
-            <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 9, marginRight: 8, color: "#ffe600" }}>DL</span>
-            ダウンロード中... <span style={{ fontFamily: "'Orbitron', sans-serif" }}>{progress}%</span>
+            {isCyberpunk && <span style={{ fontFamily: "var(--t-font-display)", fontSize: 9, marginRight: 8, color: "var(--t-warning)" }}>DL</span>}
+            ダウンロード中... <span style={{ fontFamily: "var(--t-font-display)" }}>{progress}%</span>
           </div>
           <div
             style={{
               height: 3,
-              borderRadius: 1,
-              background: "rgba(0, 240, 255, 0.1)",
+              borderRadius: "var(--t-radius)",
+              background: "var(--t-border)",
               overflow: "hidden",
             }}
           >
@@ -104,22 +108,22 @@ export default function UpdateChecker() {
               style={{
                 width: `${progress}%`,
                 height: "100%",
-                background: "linear-gradient(90deg, #00f0ff, #a855f7)",
+                background: "var(--t-gradient-button)",
                 transition: "width 0.3s",
-                boxShadow: "0 0 8px rgba(0,240,255,0.5)",
+                boxShadow: isCyberpunk ? "0 0 8px rgba(0,240,255,0.5)" : "none",
               }}
             />
           </div>
         </div>
       )}
       {state === "done" && (
-        <span style={{ color: "#00ff88" }}>
-          <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 9, marginRight: 8 }}>OK</span>
+        <span style={{ color: "var(--t-success)" }}>
+          {isCyberpunk && <span style={{ fontFamily: "var(--t-font-display)", fontSize: 9, marginRight: 8 }}>OK</span>}
           更新完了 — 再起動します...
         </span>
       )}
       {error && (
-        <div style={{ fontSize: 10, color: "#ff6b8a", marginTop: 4 }}>
+        <div style={{ fontSize: 10, color: "var(--t-danger)", marginTop: 4 }}>
           {error}
         </div>
       )}

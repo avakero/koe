@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Koe",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "identifier": "com.koe.app",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -65,7 +65,7 @@
       "endpoints": [
         "https://github.com/avakero/koe/releases/latest/download/latest.json"
       ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDZGOTlFNjAwMDk4RUMxOTUKUldTVndZNEpBT2FaYjZYcVZONTNDVlh5TmFMQkhKa0l1a2pNSEZZMmdtaEhnb2hvNnBFZWdrUlEK"
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFGREM5QTU4NUY1RkQyODgKUldTSTBsOWZXSnJjSDArNytaTDVzYTlLcmZyUHJyMFlYdk9LTnFicjUyMTFkUEJUaE1aVWhsMEwK"
     }
   }
 }

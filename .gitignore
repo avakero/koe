@@ -29,3 +29,6 @@ npm-debug.log*
 
 # Whisper models (large binary files)
 *.bin
+
+# Tauri signing key (private)
+.tauri-key

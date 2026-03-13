@@ -1,31 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700;800&family=Noto+Serif+JP:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Press+Start+2P&display=swap');
 
 :root {
-  /* Cyberpunk color palette */
-  --cp-bg-deep: #0a0a0f;
-  --cp-bg: #0d0d1a;
-  --cp-bg-card: rgba(15, 15, 35, 0.85);
-  --cp-bg-card-hover: rgba(20, 20, 45, 0.95);
-  --cp-cyan: #00f0ff;
-  --cp-magenta: #ff00aa;
-  --cp-yellow: #ffe600;
-  --cp-green: #00ff88;
-  --cp-red: #ff3366;
-  --cp-purple: #a855f7;
-  --cp-blue: #3b82f6;
-  --cp-text: #e0e6ff;
-  --cp-text-dim: #6b7ea6;
-  --cp-border: rgba(0, 240, 255, 0.15);
-  --cp-border-active: rgba(0, 240, 255, 0.5);
-  --cp-glow: 0 0 10px rgba(0, 240, 255, 0.3), 0 0 30px rgba(0, 240, 255, 0.1);
-  --cp-glow-magenta: 0 0 10px rgba(255, 0, 170, 0.3), 0 0 30px rgba(255, 0, 170, 0.1);
+  /* Theme variables — defaults are cyberpunk, overridden by JS */
+  --t-bg-deep: #0a0a0f;
+  --t-bg: #0d0d1a;
+  --t-bg-card: rgba(15, 15, 35, 0.85);
+  --t-bg-card-hover: rgba(20, 20, 45, 0.95);
+  --t-primary: #00f0ff;
+  --t-secondary: #ff00aa;
+  --t-accent: #a855f7;
+  --t-success: #00ff88;
+  --t-warning: #ffe600;
+  --t-danger: #ff3366;
+  --t-text: #e0e6ff;
+  --t-text-dim: #6b7ea6;
+  --t-border: rgba(0, 240, 255, 0.15);
+  --t-border-active: rgba(0, 240, 255, 0.5);
+  --t-glow: 0 0 10px rgba(0, 240, 255, 0.3), 0 0 30px rgba(0, 240, 255, 0.1);
+  --t-glow-secondary: 0 0 10px rgba(255, 0, 170, 0.3), 0 0 30px rgba(255, 0, 170, 0.1);
+  --t-font-display: 'Orbitron', sans-serif;
+  --t-font-body: 'Rajdhani', sans-serif;
+  --t-radius: 2px;
+  --t-radius-lg: 4px;
+  --t-input-bg: rgba(10, 10, 20, 0.8);
+  --t-gradient: linear-gradient(135deg, #00f0ff, #ff00aa);
+  --t-gradient-button: linear-gradient(135deg, #00f0ff, #a855f7);
+  --t-button-text-on-gradient: #0a0a0f;
+  --t-scrollbar-thumb: rgba(0, 240, 255, 0.3);
+  --t-scrollbar-thumb-hover: rgba(0, 240, 255, 0.5);
+  --t-grid-color: rgba(0, 240, 255, 0.03);
+  --t-scanline: rgba(0, 0, 0, 0.03);
+  --t-corner-border: rgba(0, 240, 255, 0.3);
+  --t-letter-spacing: 0.5px;
+  --t-label-spacing: 2px;
+  --t-label-size: 10px;
+  --t-section-backdrop: blur(10px);
 
-  font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--t-font-body);
   font-size: 14px;
   line-height: 1.5;
   font-weight: 400;
-  color: var(--cp-text);
-  background-color: var(--cp-bg);
+  color: var(--t-text);
+  background-color: var(--t-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -39,11 +55,10 @@
 
 body {
   min-height: 100vh;
-  background: var(--cp-bg);
-  /* Subtle grid pattern */
+  background: var(--t-bg);
   background-image:
-    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(var(--t-grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--t-grid-color) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
@@ -52,29 +67,29 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--cp-bg-deep);
+  background: var(--t-bg-deep);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 240, 255, 0.3);
+  background: var(--t-scrollbar-thumb);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 240, 255, 0.5);
+  background: var(--t-scrollbar-thumb-hover);
 }
 
 button {
   cursor: pointer;
-  border: 1px solid var(--cp-border);
-  border-radius: 4px;
+  border: 1px solid var(--t-border);
+  border-radius: var(--t-radius);
   padding: 8px 16px;
-  background: var(--cp-bg-card);
-  font-family: 'Rajdhani', sans-serif;
+  background: var(--t-bg-card);
+  font-family: var(--t-font-body);
   font-size: 14px;
   font-weight: 600;
-  color: var(--cp-cyan);
+  color: var(--t-primary);
   transition: all 0.2s ease;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: var(--t-letter-spacing);
   position: relative;
   overflow: hidden;
 }
@@ -90,11 +105,27 @@ button::before {
   transition: left 0.4s ease;
 }
 
+/* Only show sweep animation in cyberpunk theme */
+[data-theme="simple"] button::before,
+[data-theme="pop"] button::before {
+  display: none;
+}
+
+[data-theme="simple"] button {
+  text-transform: none;
+  font-weight: 500;
+}
+
+[data-theme="pop"] button {
+  text-transform: none;
+  font-weight: 700;
+}
+
 button:hover {
-  background: var(--cp-bg-card-hover);
-  border-color: var(--cp-border-active);
-  box-shadow: var(--cp-glow);
-  color: #fff;
+  background: var(--t-bg-card-hover);
+  border-color: var(--t-border-active);
+  box-shadow: var(--t-glow);
+  color: var(--t-text);
 }
 
 button:hover::before {
@@ -111,41 +142,45 @@ button:disabled {
 }
 
 input, select {
-  border: 1px solid var(--cp-border);
-  border-radius: 4px;
+  border: 1px solid var(--t-border);
+  border-radius: var(--t-radius);
   padding: 8px 12px;
-  font-family: 'Rajdhani', sans-serif;
+  font-family: var(--t-font-body);
   font-size: 14px;
   font-weight: 500;
   width: 100%;
   outline: none;
-  background: rgba(10, 10, 20, 0.8);
-  color: var(--cp-text);
+  background: var(--t-input-bg);
+  color: var(--t-text);
   transition: all 0.2s ease;
 }
 
 input:focus, select:focus {
-  border-color: var(--cp-cyan);
-  box-shadow: var(--cp-glow);
+  border-color: var(--t-primary);
+  box-shadow: var(--t-glow);
 }
 
 input::placeholder {
-  color: var(--cp-text-dim);
+  color: var(--t-text-dim);
 }
 
 select option {
-  background: var(--cp-bg-deep);
-  color: var(--cp-text);
+  background: var(--t-bg-deep);
+  color: var(--t-text);
 }
 
 a {
-  color: var(--cp-cyan);
+  color: var(--t-primary);
   text-decoration: none;
   transition: all 0.2s ease;
 }
 
 a:hover {
-  color: #fff;
+  color: var(--t-text);
+  text-shadow: none;
+}
+
+[data-theme="cyberpunk"] a:hover {
   text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
 }
 
@@ -161,16 +196,16 @@ a:hover {
 }
 
 @keyframes glitch {
-  0%, 100% { text-shadow: -1px 0 var(--cp-cyan), 1px 0 var(--cp-magenta); }
-  20% { text-shadow: -2px 1px var(--cp-cyan), 2px -1px var(--cp-magenta); }
-  40% { text-shadow: 1px -1px var(--cp-cyan), -1px 1px var(--cp-magenta); }
-  60% { text-shadow: -1px 2px var(--cp-cyan), 1px -2px var(--cp-magenta); }
-  80% { text-shadow: 2px 0 var(--cp-cyan), -2px 0 var(--cp-magenta); }
+  0%, 100% { text-shadow: -1px 0 var(--t-primary), 1px 0 var(--t-secondary); }
+  20% { text-shadow: -2px 1px var(--t-primary), 2px -1px var(--t-secondary); }
+  40% { text-shadow: 1px -1px var(--t-primary), -1px 1px var(--t-secondary); }
+  60% { text-shadow: -1px 2px var(--t-primary), 1px -2px var(--t-secondary); }
+  80% { text-shadow: 2px 0 var(--t-primary), -2px 0 var(--t-secondary); }
 }
 
 @keyframes borderPulse {
-  0%, 100% { border-color: rgba(0, 240, 255, 0.15); }
-  50% { border-color: rgba(0, 240, 255, 0.4); }
+  0%, 100% { border-color: var(--t-border); }
+  50% { border-color: var(--t-border-active); }
 }
 
 @keyframes neonPulse {
@@ -181,4 +216,55 @@ a:hover {
 @keyframes statusGlow {
   0%, 100% { box-shadow: 0 0 5px rgba(0, 240, 255, 0.2); }
   50% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.4), 0 0 30px rgba(0, 240, 255, 0.1); }
+}
+
+/* Pop theme: softer bounce animation */
+@keyframes popBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* Simple theme: subtle fade pulse */
+@keyframes simplePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+/* Retro theme: scanline + pixel border */
+[data-theme="retro"] button::before {
+  background: linear-gradient(90deg, transparent, rgba(51, 255, 51, 0.08), transparent);
+}
+
+[data-theme="retro"] button {
+  text-transform: uppercase;
+  font-size: 10px;
+  image-rendering: pixelated;
+}
+
+/* Natural theme: warm organic style */
+[data-theme="natural"] button {
+  text-transform: none;
+  font-weight: 500;
+}
+
+[data-theme="natural"] button::before {
+  display: none;
+}
+
+/* Midnight theme: refined */
+[data-theme="midnight"] button {
+  text-transform: none;
+  font-weight: 500;
+}
+
+[data-theme="midnight"] button::before {
+  background: linear-gradient(90deg, transparent, rgba(212, 168, 83, 0.06), transparent);
+}
+
+/* Retro theme: CRT flicker */
+@keyframes crtFlicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
 }

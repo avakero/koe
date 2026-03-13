@@ -73,7 +73,7 @@ async fn toggle_recording_command(app: tauri::AppHandle) -> Result<(), String> {
 async fn switch_to_floating(app: tauri::AppHandle) -> Result<(), String> {
     if let Some(floating) = app.get_webview_window("floating") {
         floating.show().map_err(|e| e.to_string())?;
-        floating.set_focus().map_err(|e| e.to_string())?;
+        // focusable: false のため set_focus() は呼ばない
     }
     if let Some(main_win) = app.get_webview_window("main") {
         main_win.hide().map_err(|e| e.to_string())?;
@@ -237,6 +237,21 @@ pub fn run() {
                 }
             });
 
+            // フローティングウィンドウに WS_EX_NOACTIVATE を適用
+            // → クリックしてもフォーカスを奪わない
+            #[cfg(windows)]
+            {
+                if let Some(floating) = app.get_webview_window("floating") {
+                    use tauri::Listener;
+                    let floating_clone = floating.clone();
+                    floating.once("tauri://webview-created", move |_| {
+                        apply_no_activate(&floating_clone);
+                    });
+                    // ウィンドウが既に作成済みの場合にも対応
+                    apply_no_activate(&floating);
+                }
+            }
+
             // 音声レベルをフローティングウィンドウに50ms間隔で送信
             let app_handle = app.handle().clone();
             let level_state = state.clone();
@@ -264,4 +279,29 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+// ---------------------------------------------------------------------------
+// Windows: フローティングウィンドウをフォーカス不可にする
+// ---------------------------------------------------------------------------
+
+#[cfg(windows)]
+fn apply_no_activate(window: &tauri::WebviewWindow) {
+    use windows_sys::Win32::UI::WindowsAndMessaging::{
+        GetWindowLongW, SetWindowLongW, GWL_EXSTYLE,
+        WS_EX_NOACTIVATE, WS_EX_APPWINDOW,
+    };
+
+    // Tauri v2: Hwnd(*mut c_void) → isize へキャスト
+    let hwnd = match window.hwnd() {
+        Ok(h) => h.0 as isize,
+        Err(_) => return,
+    };
+
+    unsafe {
+        let ex_style = GetWindowLongW(hwnd, GWL_EXSTYLE);
+        // WS_EX_NOACTIVATE を追加し、WS_EX_APPWINDOW を除去
+        let new_style = (ex_style | WS_EX_NOACTIVATE as i32) & !(WS_EX_APPWINDOW as i32);
+        SetWindowLongW(hwnd, GWL_EXSTYLE, new_style);
+    }
 }
