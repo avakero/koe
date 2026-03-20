@@ -227,13 +227,12 @@ pub fn run() {
                 })
                 .build(app)?;
 
-            // ウィンドウを閉じてもトレイに残す（Windows/macOS）
+            // ×ボタンでアプリを完全終了する
+            let app_handle_close = app.handle().clone();
             let win = app.get_webview_window("main").unwrap();
-            let win_clone = win.clone();
             win.on_window_event(move |event| {
-                if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                    api.prevent_close();
-                    let _ = win_clone.hide();
+                if let tauri::WindowEvent::CloseRequested { .. } = event {
+                    app_handle_close.exit(0);
                 }
             });
 
