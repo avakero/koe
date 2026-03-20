@@ -26,16 +26,17 @@
         "label": "floating",
         "title": "Koe Floating",
         "url": "floating.html",
-        "width": 140,
-        "height": 140,
-        "resizable": false,
+        "width": 80,
+        "height": 80,
+        "resizable": true,
         "fullscreen": false,
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": true,
         "center": true,
         "visible": false,
-        "skipTaskbar": true
+        "skipTaskbar": true,
+        "focusable": false
       }
     ],
     "security": {
