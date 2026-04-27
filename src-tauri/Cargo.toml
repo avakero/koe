@@ -1,6 +1,6 @@
 [package]
 name = "koe"
-version = "1.2.1"
+version = "1.3.0"
 edition = "2021"
 license = "MIT"
 
@@ -45,7 +45,7 @@ enigo = { version = "0.2", features = [] }
 
 # Windows API (フローティングウィンドウ WS_EX_NOACTIVATE)
 [target.'cfg(windows)'.dependencies]
-windows-sys = { version = "0.48", features = ["Win32_UI_WindowsAndMessaging"] }
+windows-sys = { version = "0.48", features = ["Win32_UI_WindowsAndMessaging", "Win32_Foundation"] }
 
 [profile.release]
 # whisper-rs はリリースビルドで大幅に高速化される

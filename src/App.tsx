@@ -108,11 +108,11 @@ export default function App() {
   // Theme-specific label map
   const themeLabels = {
     title: isRetro ? "KOE" : "KOE",
-    subtitle: isCyberpunk ? "Voice Recognition System v1.1"
-      : isRetro ? "> VOICE_REC v1.1"
-      : isPop ? "✨ 音声認識ツール v1.1"
-      : isNatural ? "声 — 音声認識ツール v1.1"
-      : "音声認識ツール v1.1",
+    subtitle: isCyberpunk ? "Voice Recognition System v1.3"
+      : isRetro ? "> VOICE_REC v1.3"
+      : isPop ? "✨ 音声認識ツール v1.3"
+      : isNatural ? "声 — 音声認識ツール v1.3"
+      : "音声認識ツール v1.3",
     config: isCyberpunk ? "⚙ CONFIG" : isRetro ? "> CONFIG" : isPop ? "⚙ せってい" : isNatural ? "⚙ 設定" : "⚙ 設定",
     float: isCyberpunk ? "◈ FLOAT MODE" : isRetro ? "> FLOAT" : isPop ? "🫧 フロート" : isNatural ? "🍃 フロート" : isMidnight ? "✦ フロート" : "フロートモード",
     errorLabel: isCyberpunk ? "ERROR LOG" : isRetro ? "> ERR_LOG" : "エラー",

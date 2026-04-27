@@ -72,8 +72,16 @@ async fn toggle_recording_command(app: tauri::AppHandle) -> Result<(), String> {
 #[tauri::command]
 async fn switch_to_floating(app: tauri::AppHandle) -> Result<(), String> {
     if let Some(floating) = app.get_webview_window("floating") {
-        floating.show().map_err(|e| e.to_string())?;
-        // focusable: false のため set_focus() は呼ばない
+        // フォーカスを奪わずに表示（Win32 API 直接呼び出し）
+        #[cfg(windows)]
+        {
+            apply_no_activate(&floating);
+            show_no_activate(&floating);
+        }
+        #[cfg(not(windows))]
+        {
+            floating.show().map_err(|e| e.to_string())?;
+        }
     }
     if let Some(main_win) = app.get_webview_window("main") {
         main_win.hide().map_err(|e| e.to_string())?;
@@ -302,5 +310,31 @@ fn apply_no_activate(window: &tauri::WebviewWindow) {
         // WS_EX_NOACTIVATE を追加し、WS_EX_APPWINDOW を除去
         let new_style = (ex_style | WS_EX_NOACTIVATE as i32) & !(WS_EX_APPWINDOW as i32);
         SetWindowLongW(hwnd, GWL_EXSTYLE, new_style);
+    }
+}
+
+/// フォーカスを奪わずにウィンドウを表示する
+#[cfg(windows)]
+fn show_no_activate(window: &tauri::WebviewWindow) {
+    use windows_sys::Win32::UI::WindowsAndMessaging::{
+        ShowWindow, SetWindowPos, SW_SHOWNOACTIVATE,
+        HWND_TOPMOST, SWP_NOMOVE, SWP_NOSIZE, SWP_NOACTIVATE,
+    };
+
+    let hwnd = match window.hwnd() {
+        Ok(h) => h.0 as isize,
+        Err(_) => return,
+    };
+
+    unsafe {
+        // フォーカスを奪わずに表示
+        ShowWindow(hwnd, SW_SHOWNOACTIVATE);
+        // 最前面を維持しつつフォーカスを奪わない
+        SetWindowPos(
+            hwnd,
+            HWND_TOPMOST,
+            0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE,
+        );
     }
 }

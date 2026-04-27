@@ -566,8 +566,7 @@ export default function FloatingWindow() {
     }, [status, colors, theme, viewMode, winW, winH]);
 
     // Click handler
-    const handleClick = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.currentTarget.blur();
+    const handleClick = useCallback(async () => {
         try { await invoke("toggle_recording_command"); } catch (e) { console.error("toggle failed:", e); }
     }, []);
 
@@ -575,7 +574,6 @@ export default function FloatingWindow() {
 
     const handleClose = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
-        e.currentTarget.blur();
         try { await invoke("switch_to_main"); } catch (err) { console.error("Close failed:", err); }
     }, []);
 
