@@ -148,7 +148,7 @@ export default function FloatingWindow() {
         const innerR = S * 0.175;
         const maxBarH = S * 0.225;
 
-        const updateBars = (isRecording: boolean, isError: boolean, level: number, t: number, count: number, maxH: number) => {
+        const updateBars = (isRecording: boolean, isError: boolean, level: number, _t: number, count: number, maxH: number) => {
             const bars = barsRef.current;
             while (bars.length < count) bars.push(0);
             for (let i = 0; i < count; i++) {
@@ -156,8 +156,8 @@ export default function FloatingWindow() {
                     ? level * (0.3 + 0.7 * Math.random()) * maxH
                     : isError
                         ? Math.random() * (maxH * 0.08) + 1
-                        : 1.5 + Math.sin(t * 0.02 + i * 0.5) * (maxH * 0.08);
-                bars[i] += (target - bars[i]) * 0.18;
+                        : 1.0; // idle時は完全に静止
+                bars[i] += (target - bars[i]) * 0.22;
             }
         };
 
@@ -186,8 +186,10 @@ export default function FloatingWindow() {
             ctx.clearRect(0, 0, cW, cH);
             const isRecording = status === "recording";
             const isError = status === "error";
-            const rawLevel = isRecording ? Math.min(audioLevelRef.current * 8, 1) : 0;
-            smoothLevelRef.current += (rawLevel - smoothLevelRef.current) * 0.25;
+            // RMSを大幅に増幅し、パワーカーブで小さな音でもしっかり反応させる
+            const amplified = Math.min(audioLevelRef.current * 25, 1);
+            const rawLevel = isRecording ? Math.pow(amplified, 0.6) : 0;
+            smoothLevelRef.current += (rawLevel - smoothLevelRef.current) * 0.35;
             return { isRecording, isError, level: smoothLevelRef.current, t: timeRef.current };
         };
 
@@ -218,8 +220,8 @@ export default function FloatingWindow() {
                     ? level * (0.2 + 0.8 * Math.random()) * maxH * (0.3 + 0.7 * centerFactor)
                     : isError
                         ? Math.random() * maxH * 0.15 + 4
-                        : 4 + Math.sin(t * 0.03 + i * 0.4) * 6 * centerFactor + centerFactor * 8;
-                bars[i] += (target - bars[i]) * 0.15;
+                        : 3; // idle時は小さな固定バーのみ
+                bars[i] += (target - bars[i]) * 0.2;
 
                 const barH = Math.max(bars[i], 3);
                 const x = startX + i * (barW + gap);
