@@ -75,28 +75,9 @@ export default function App() {
     };
   }, []);
 
-  // 設定をオーバーレイで表示（ページ切替ではなくトグル）
-  const isSettingsOpen = page === "settings";
-  const toggleSettings = () => setPage(isSettingsOpen ? "main" : "settings");
-
-  // 設定画面をオーバーレイとして表示
-  const settingsOverlay = isSettingsOpen ? (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 50,
-        background: "var(--t-bg)",
-        overflowY: "auto",
-        animation: "settingsSlideIn 0.3s ease-out",
-      }}
-    >
-      <Settings onBack={toggleSettings} />
-    </div>
-  ) : null;
+  if (page === "settings") {
+    return <Settings onBack={() => setPage("main")} />;
+  }
 
   const isCyberpunk = theme === "cyberpunk";
   const isPop = theme === "pop";
@@ -301,27 +282,16 @@ export default function App() {
       {/* Action buttons */}
       <div style={{ display: "flex", gap: 12, marginTop: 8 }}>
         <button
-          onClick={toggleSettings}
-          className={`settings-toggle-btn ${isSettingsOpen ? 'is-open' : ''}`}
+          onClick={() => setPage("settings")}
           style={{
             fontSize: isRetro ? 10 : 13,
-            color: isSettingsOpen ? "var(--t-danger)" : "var(--t-text-dim)",
-            border: isSettingsOpen ? "1px solid var(--t-danger)" : "1px solid var(--t-border)",
+            color: "var(--t-text-dim)",
+            border: "1px solid var(--t-border)",
             padding: "8px 16px",
             borderRadius: "var(--t-radius)",
-            background: isSettingsOpen ? "rgba(255, 51, 102, 0.08)" : undefined,
-            transition: "all 0.3s ease",
-            position: "relative",
-            zIndex: 60,
           }}
         >
-          <span className="settings-icon-wrapper">
-            <span className={`settings-icon ${isSettingsOpen ? 'is-open' : ''}`}>
-              {isSettingsOpen
-                ? (isCyberpunk ? "✕ CLOSE" : isRetro ? "> CLOSE" : "✕ 閉じる")
-                : (isCyberpunk ? "⚙ CONFIG" : isRetro ? "> CONFIG" : isPop ? "⚙ せってい" : isNatural ? "⚙ 設定" : "⚙ 設定")}
-            </span>
-          </span>
+          {themeLabels.config}
         </button>
 
         <button
@@ -349,9 +319,6 @@ export default function App() {
       </div>
 
       <UpdateChecker />
-
-      {/* 設定オーバーレイ */}
-      {settingsOverlay}
     </div>
   );
 }

@@ -653,15 +653,25 @@ export default function FloatingWindow() {
                     onMouseDown={preventFocus}
                     tabIndex={-1}
                     style={{ ...btnStyle, width: btnSize, height: btnSize, fontSize: Math.max(7, btnSize * 0.5) }}
-                    title="設定"
-                >⚙</button>
-                <button
-                    onClick={handleClose}
-                    onMouseDown={preventFocus}
-                    tabIndex={-1}
-                    style={{ ...btnStyle, width: btnSize, height: btnSize, fontSize: Math.max(7, btnSize * 0.5) }}
-                    title="メイン画面に戻る"
-                >✕</button>
+                    title={menuOpen ? "設定を閉じる" : "設定"}
+                >
+                    <span style={{
+                        display: "inline-block",
+                        transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                        transform: menuOpen ? "rotate(90deg)" : "rotate(0deg)"
+                    }}>
+                        {menuOpen ? "✕" : "⚙"}
+                    </span>
+                </button>
+                {!menuOpen && (
+                    <button
+                        onClick={handleClose}
+                        onMouseDown={preventFocus}
+                        tabIndex={-1}
+                        style={{ ...btnStyle, width: btnSize, height: btnSize, fontSize: Math.max(7, btnSize * 0.5) }}
+                        title="メイン画面に戻る"
+                    >✕</button>
+                )}
             </div>
 
             {/* ポップアップメニュー */}
