@@ -107,7 +107,7 @@ export default function App() {
 
   // Theme-specific label map
   const themeLabels = {
-    title: isRetro ? "KOE" : "KOE",
+    title: isRetro ? "VOXTRO" : "VOXTRO",
     subtitle: isCyberpunk ? "Voice Recognition System v1.3"
       : isRetro ? "> VOICE_REC v1.3"
       : isPop ? "✨ 音声認識ツール v1.3"

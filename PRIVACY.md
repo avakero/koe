@@ -1,14 +1,14 @@
-# プライバシーポリシー — Koe
+# プライバシーポリシー — Voxtro
 
 最終更新日: 2025年
 
 ## 概要
 
-Koe は日本語音声入力アプリです。ユーザーのプライバシーを尊重し、可能な限りデータをローカルで処理します。
+Voxtro は日本語音声入力アプリです。ユーザーのプライバシーを尊重し、可能な限りデータをローカルで処理します。
 
 ## 収集するデータ
 
-Koe は**いかなるデータも開発者に送信しません**。
+Voxtro は**いかなるデータも開発者に送信しません**。
 
 ## データの処理
 
@@ -40,13 +40,13 @@ Koe は**いかなるデータも開発者に送信しません**。
 | 録音データ（WAV） | OS の一時ディレクトリ | 文字起こし後に自動削除 |
 
 ### OS 別の保存先
-- **Windows**: `%APPDATA%\koe\`
-- **macOS**: `~/Library/Application Support/koe/`
-- **Linux**: `~/.config/koe/`
+- **Windows**: `%APPDATA%\voxtro\`
+- **macOS**: `~/Library/Application Support/voxtro/`
+- **Linux**: `~/.config/voxtro/`
 
 ## ネットワーク通信
 
-Koe が外部と通信するのは以下の場合のみです：
+Voxtro が外部と通信するのは以下の場合のみです：
 
 1. **初回セットアップ時**: Whisper モデルおよび whisper-cli バイナリのダウンロード（Hugging Face / GitHub）
 2. **AI 整形使用時**: 文字起こしテキストの Gemini API への送信（ユーザーが有効にした場合のみ）

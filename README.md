@@ -1,4 +1,4 @@
-# Koe 🎙️ — 完全無料 日本語音声入力アプリ
+# Voxtro 🎙️ — 完全無料 日本語音声入力アプリ
 
 Whisper.cpp (ローカル推論) + Gemini BYOK で動く、開発者コスト $0 の日本語音声入力ツール。
 
@@ -6,26 +6,26 @@ Whisper.cpp (ローカル推論) + Gemini BYOK で動く、開発者コスト $0
 
 ### ダウンロード
 
-[GitHub Releases](https://github.com/avakero/koe/releases/latest) から最新版をダウンロード:
+[GitHub Releases](https://github.com/avakero/voxtro/releases/latest) から最新版をダウンロード:
 
 | OS | ファイル | 備考 |
 |------|----------|------|
-| **Windows** | `Koe_x.x.x_x64-setup.exe` | NSIS インストーラー |
-| **macOS (Intel)** | `Koe_x.x.x_x64.dmg` | x86_64 |
-| **macOS (Apple Silicon)** | `Koe_x.x.x_aarch64.dmg` | M1/M2/M3 |
+| **Windows** | `Voxtro_x.x.x_x64-setup.exe` | NSIS インストーラー |
+| **macOS (Intel)** | `Voxtro_x.x.x_x64.dmg` | x86_64 |
+| **macOS (Apple Silicon)** | `Voxtro_x.x.x_aarch64.dmg` | M1/M2/M3 |
 
 ### Windows
 
-1. `Koe_x.x.x_x64-setup.exe` をダウンロードして実行
+1. `Voxtro_x.x.x_x64-setup.exe` をダウンロードして実行
 2. SmartScreen 警告が表示される場合: **「詳細情報」→「実行」** をクリック
 3. インストーラーの指示に従ってインストール
 
 ### macOS
 
-1. `.dmg` ファイルを開き、`Koe.app` を `Applications` にドラッグ
+1. `.dmg` ファイルを開き、`Voxtro.app` を `Applications` にドラッグ
 2. 初回起動時に Gatekeeper 警告が出る場合、ターミナルで以下を実行:
    ```bash
-   xattr -dr com.apple.quarantine /Applications/Koe.app
+   xattr -dr com.apple.quarantine /Applications/Voxtro.app
    ```
 
 ## 初回セットアップ
@@ -95,7 +95,7 @@ npm run tauri build
 初回のみ、署名キーペアの生成と設定が必要です:
 
 ```bash
-npx @tauri-apps/cli signer generate -w ~/.tauri/koe.key
+npx @tauri-apps/cli signer generate -w ~/.tauri/voxtro.key
 ```
 
 生成された **公開鍵** を `src-tauri/tauri.conf.json` の `plugins.updater.pubkey` に設定し、**秘密鍵** を GitHub Secrets に登録:

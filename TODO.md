@@ -1,4 +1,4 @@
-# Koe — 公開・配布タスク
+# Voxtro — 公開・配布タスク
 
 ## 未対応（外部リソース・手動作業が必要）
 
@@ -24,7 +24,7 @@
 - [x] 開発者向けリリース手順・署名キー設定手順
 
 ### ~~5. GitHub リポジトリ作成・初回プッシュ~~ ✅
-- [x] リポジトリ作成 (https://github.com/avakero/koe)
+- [x] リポジトリ作成 (https://github.com/avakero/voxtro)
 - [x] `.gitignore` 作成（node_modules, target, dist 等）
 - [x] 初回コミット・プッシュ
 

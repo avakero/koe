@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Koe",
-  "version": "1.3.1",
-  "identifier": "com.koe.app",
+  "productName": "Voxtro",
+  "version": "1.4.0",
+  "identifier": "com.voxtro.app",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Koe — 日本語音声入力",
+        "title": "Voxtro — 日本語音声入力",
         "width": 480,
         "height": 560,
         "resizable": true,
@@ -24,7 +24,7 @@
       },
       {
         "label": "floating",
-        "title": "Koe Floating",
+        "title": "Voxtro Floating",
         "url": "floating.html",
         "width": 80,
         "height": 80,
@@ -64,7 +64,7 @@
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://github.com/avakero/koe/releases/latest/download/latest.json"
+        "https://github.com/avakero/voxtro/releases/latest/download/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFGREM5QTU4NUY1RkQyODgKUldTSTBsOWZXSnJjSDArNytaTDVzYTlLcmZyUHJyMFlYdk9LTnFicjUyMTFkUEJUaE1aVWhsMEwK"
     }

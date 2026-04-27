@@ -212,7 +212,7 @@ fn resample(samples: &[f32], from_rate: u32, to_rate: u32) -> Vec<f32> {
 
 /// f32 サンプル列を 16kHz mono i16 WAV として一時ファイルに書き出す。
 pub fn save_wav(samples: &[f32]) -> Result<PathBuf, Box<dyn std::error::Error>> {
-    let path = std::env::temp_dir().join("koe_recording.wav");
+    let path = std::env::temp_dir().join("voxtro_recording.wav");
 
     let spec = WavSpec {
         channels: 1,

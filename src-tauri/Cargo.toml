@@ -1,11 +1,11 @@
 [package]
-name = "koe"
+name = "voxtro"
 version = "1.3.0"
 edition = "2021"
 license = "MIT"
 
 [lib]
-name = "koe_lib"
+name = "voxtro_lib"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [build-dependencies]

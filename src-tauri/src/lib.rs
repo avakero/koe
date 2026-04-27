@@ -220,7 +220,7 @@ pub fn run() {
             // システムトレイ
             TrayIconBuilder::new()
                 .icon(app.default_window_icon().unwrap().clone())
-                .tooltip("Koe — 日本語音声入力")
+                .tooltip("Voxtro — 日本語音声入力")
                 .on_tray_icon_event(|tray, event| {
                     if let TrayIconEvent::Click { .. } = event {
                         if let Some(win) = tray.app_handle().get_webview_window("main") {

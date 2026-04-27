@@ -4,8 +4,8 @@
 //! struct サイズ不一致問題があるため、公式バイナリ (`whisper-cli`) を使用する。
 //!
 //! バイナリとモデルは app_data_dir/ に格納される。
-//! - Windows: %APPDATA%\koe\
-//! - macOS:   ~/Library/Application Support/koe/
+//! - Windows: %APPDATA%\voxtro\
+//! - macOS:   ~/Library/Application Support/voxtro/
 
 use std::path::PathBuf;
 use tauri::{Emitter, Manager};
@@ -70,7 +70,7 @@ fn whisper_bin_url() -> &'static str {
 
 // ─── パス解決 ─────────────────────────────────────────────────────────────
 
-fn koe_data_dir(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn std::error::Error>> {
+fn voxtro_data_dir(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn std::error::Error>> {
     let dir = app.path().app_data_dir()?;
     std::fs::create_dir_all(&dir)?;
     Ok(dir)
@@ -78,11 +78,11 @@ fn koe_data_dir(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn std::error::E
 
 pub fn model_path(app: &tauri::AppHandle, model: &str) -> Result<PathBuf, Box<dyn std::error::Error>> {
     let info = get_model_info(model);
-    Ok(koe_data_dir(app)?.join("models").join(info.filename))
+    Ok(voxtro_data_dir(app)?.join("models").join(info.filename))
 }
 
 fn bin_path(app: &tauri::AppHandle) -> Result<PathBuf, Box<dyn std::error::Error>> {
-    Ok(koe_data_dir(app)?.join("bin").join(whisper_bin_name()))
+    Ok(voxtro_data_dir(app)?.join("bin").join(whisper_bin_name()))
 }
 
 // ─── ダウンロード ─────────────────────────────────────────────────────────
@@ -95,7 +95,7 @@ pub async fn download_model(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let info = get_model_info(model);
     let dest = {
-        let dir = koe_data_dir(app)?.join("models");
+        let dir = voxtro_data_dir(app)?.join("models");
         std::fs::create_dir_all(&dir)?;
         dir.join(info.filename)
     };
@@ -122,7 +122,7 @@ pub async fn download_whisper_bin(app: &tauri::AppHandle) -> Result<(), Box<dyn 
         std::fs::create_dir_all(dir)?;
     }
 
-    let zip_path = koe_data_dir(app)?.join("bin").join("whisper-bin.zip");
+    let zip_path = voxtro_data_dir(app)?.join("bin").join("whisper-bin.zip");
     download_file_with_progress(app, whisper_bin_url(), &zip_path, "bin-download-progress").await?;
 
     // ZIP を展開して whisper-cli を取り出す
